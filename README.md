@@ -5,6 +5,7 @@ El sistema permite registrar y gestionar pedidos en línea, organizar el menú, 
 
 Además, la aplicación ofrece reportes y estadísticas que apoyan la toma de decisiones estratégicas, automatiza tareas repetitivas y reduce errores humanos, contribuyendo a un servicio más ágil, preciso y profesional.
 
+asd
 1. Producto
 
 Contiene la información de cada artículo del menú (hamburguesas, bebidas, acompañamientos, etc.).
