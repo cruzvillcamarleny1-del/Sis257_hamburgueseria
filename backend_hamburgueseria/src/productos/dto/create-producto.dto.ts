@@ -1,7 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsPositive, IsString, MaxLength, Min } from 'class-validator';
 
 export class CreateProductoDto {
+  @ApiProperty()
+  @IsNotEmpty({ message: 'El campo fotografia es obligatorio' })
+  @IsString({ message: 'El campo fotografia debe ser de tipo cadena' })
+  @MaxLength(500, {
+    message: 'El campo fotografia no debe ser mayor a 500 caracteres',
+  })
+  readonly imagen: string;
+
   @ApiProperty()
   @IsNotEmpty({ message: 'El campo nombre no debe ser vacío' })
   @IsString({ message: 'El campo nombre debe ser de tipo cadena' })
@@ -15,13 +23,14 @@ export class CreateProductoDto {
   readonly descripcion: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'El campo tipo no debe ser vacío' })
-  @IsString({ message: 'El campo tipo debe ser de tipo cadena' })
-  @MaxLength(100, { message: 'El campo tipo no debe ser mayor a 100 caracteres' })
-  readonly tipo: string;
+  @IsNotEmpty({ message: 'El precio no puede estar vacío.' })
+  @IsNumber({}, { message: 'El precio debe ser un número.' })
+  @IsPositive({ message: 'El precio debe ser un número positivo.' })
+  readonly precio: number;
 
   @ApiProperty()
-  @IsDefined({ message: 'El campo precio_venta debe estar definido' })
-  @IsNumber({ maxDecimalPlaces: 2 }, { message: 'El precio_venta debe tener máximo 2 decimales' })
-  readonly precioVenta: number;
+  @IsNotEmpty({ message: 'El stock no puede estar vacío.' })
+  @IsNumber({}, { message: 'El stock debe ser un número.' })
+  @Min(0, { message: 'El stock no puede ser negativo.' })
+  readonly stock: number;
 }

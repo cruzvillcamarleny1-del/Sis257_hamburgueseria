@@ -15,8 +15,18 @@ export class CreateClienteDto {
   readonly apellido: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'El campo ci no debe ser vacío' })
-  @IsString({ message: 'El campo ci debe ser de tipo cadena' })
-  @MaxLength(8, { message: 'El campo ci no debe ser mayor a 8 caracteres' })
-  readonly ci: string;
+  @IsNotEmpty({ message: 'El campo telefono es obligatorio' })
+  @IsString({ message: 'El campo telefono debe ser de tipo cadena' })
+  @MaxLength(10, {
+    message: 'El campo telefono no debe ser mayor a 10 caracteres',
+  })
+  readonly telefono: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: 'El campo direccion es obligatorio' })
+  @IsString({ message: 'El campo direccion debe ser de tipo cadena' })
+  @MaxLength(100, {
+    message: 'El campo direccion no debe ser mayor a 100 caracteres',
+  })
+  readonly direccion: string;
 }

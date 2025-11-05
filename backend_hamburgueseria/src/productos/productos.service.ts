@@ -14,18 +14,16 @@ export class ProductosService {
   async create(createProductoDto: CreateProductoDto): Promise<Producto> {
     const existe = await this.productosRepository.findOneBy({
       nombre: createProductoDto.nombre.trim(),
-      descripcion: createProductoDto.descripcion.trim(),
-      tipo: createProductoDto.tipo.trim(),
-      precioVenta: createProductoDto.precioVenta,
     });
 
     if (existe) throw new ConflictException('Ya existe este producto en el Menú');
 
     const producto = new Producto();
+    producto.imagen = createProductoDto.imagen.trim();
     producto.nombre = createProductoDto.nombre.trim();
     producto.descripcion = createProductoDto.descripcion.trim();
-    producto.tipo = createProductoDto.tipo.trim();
-    producto.precioVenta = createProductoDto.precioVenta;
+    producto.precio = createProductoDto.precio;
+    producto.stock = createProductoDto.stock;
     return this.productosRepository.save(producto);
   }
 

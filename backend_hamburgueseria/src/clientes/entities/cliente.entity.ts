@@ -18,8 +18,11 @@ export class Cliente {
   @Column('varchar', { length: 70 })
   apellido: string;
 
-  @Column('varchar', { length: 8 })
-  ci: string;
+  @Column('varchar', { length: 10 })
+  telefono: string;
+
+  @Column('varchar', { length: 100 })
+  direccion: string;
 
   @CreateDateColumn({ name: 'fecha_creacion' })
   fechaCreacion: Date;
