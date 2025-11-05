@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ProveedoresService } from './proveedores.service';
-import { CreateProveedoreDto } from './dto/create-proveedore.dto';
-import { UpdateProveedoreDto } from './dto/update-proveedore.dto';
+import { CreateProveedorDto } from './dto/create-proveedor.dto';
+import { UpdateProveedorDto } from './dto/update-proveedor.dto';
 
 @Controller('proveedores')
 export class ProveedoresController {
   constructor(private readonly proveedoresService: ProveedoresService) {}
 
   @Post()
-  create(@Body() createProveedoreDto: CreateProveedoreDto) {
-    return this.proveedoresService.create(createProveedoreDto);
+  create(@Body() createProveedorDto: CreateProveedorDto) {
+    return this.proveedoresService.create(createProveedorDto);
   }
 
   @Get()
@@ -23,8 +23,8 @@ export class ProveedoresController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProveedoreDto: UpdateProveedoreDto) {
-    return this.proveedoresService.update(+id, updateProveedoreDto);
+  update(@Param('id') id: string, @Body() updateProveedorDto: UpdateProveedorDto) {
+    return this.proveedoresService.update(+id, updateProveedorDto);
   }
 
   @Delete(':id')
