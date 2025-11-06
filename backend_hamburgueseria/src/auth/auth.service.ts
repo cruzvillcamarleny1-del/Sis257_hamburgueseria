@@ -22,10 +22,11 @@ export class AuthService {
     return { ...usuarioOk, access_token };
   }
 
-  getAccessToken(payload: any) {
-    const accessToken = this.jwtService.sign(payload, {
+  async getAccessToken(payload: JwtPayload) {
+    type StringValue = `${number}s`;
+    const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_TOKEN,
-      expiresIn: process.env.JWT_TOKEN_EXPIRATION,
+      expiresIn: process.env.JWT_TOKEN_EXPIRATION as StringValue,
     });
     return accessToken;
   }
