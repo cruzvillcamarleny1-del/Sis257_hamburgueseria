@@ -1,3 +1,5 @@
+import { genSalt, compare, hash } from 'bcrypt';
+import { Venta } from 'src/ventas/entities/venta.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -5,10 +7,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 @Entity('usuarios')
 export class Usuario {
@@ -36,14 +38,17 @@ export class Usuario {
   @DeleteDateColumn({ name: 'fecha_eliminacion', select: false })
   fechaEliminacion: Date;
 
+  @OneToMany(() => Venta, ventas => ventas.usuario)
+  ventas: Venta[];
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    const salt = await bcrypt.genSalt();
-    this.clave = await bcrypt.hash(this.clave, salt);
+    const salt = await genSalt();
+    this.clave = await hash(this.clave, salt);
   }
 
   async validatePassword(plainPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, this.clave);
+    return compare(plainPassword, this.clave);
   }
 }

@@ -1,13 +1,58 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsDateString,
+  IsDefined,
+  IsInt,
+  IsNumber,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsDefined, IsInt, IsOptional } from 'class-validator';
-import { Cliente } from 'src/clientes/entities/cliente.entity';
-import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 export class CreateVentaDto {
   @ApiProperty()
-  @Type(() => Number)
-  @IsDefined({ message: 'El campo id_Cliente debe estar definido' })
-  @IsInt({ message: 'El campo id_Cliente debe ser de tipo numérico' })
-  readonly idCliente: Cliente['id'];
+  @IsDefined({ message: 'El campo fecha debe estar definido' })
+  @IsDateString({}, { message: 'El campo fecha debe ser tipo fecha' })
+  readonly fecha: Date;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  readonly total: number;
+
+  @ApiProperty()
+  @IsInt()
+  readonly idUsuario: number;
+
+  @ApiProperty()
+  @IsInt()
+  readonly idCliente: number;
+}
+
+class DetalleVentaDto {
+  @ApiProperty()
+  @IsInt()
+  readonly idProducto: number;
+
+  @ApiProperty()
+  @IsInt()
+  @Min(1)
+  readonly cantidad: number;
+
+  @ApiProperty()
+  @IsNumber()
+  readonly precioUnitario: number;
+
+  @ApiProperty()
+  @IsNumber()
+  readonly subtotal: number;
+}
+
+export class CreateVentaConDetallesDto extends CreateVentaDto {
+  @ApiProperty({ type: [DetalleVentaDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DetalleVentaDto)
+  detalleVenta: DetalleVentaDto[];
 }
