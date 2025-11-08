@@ -28,19 +28,48 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mx-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="index.html"
-                    >Home <span class="sr-only">(current)</span></a
+                <li class="nav-item">
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#home' }"
+                    >Home</router-link
                   >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="menu.html">Menu</a>
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#food' }"
+                    >Menu</router-link
+                  >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="about.html">About</a>
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#about' }"
+                    >About</router-link
+                  >
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="book.html">Book Table</a>
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#book' }"
+                    >Book Table</router-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" :to="{ name: 'producto' }">Producto</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#food' }"
+                    >Menu</router-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#food' }"
+                    >Menu</router-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#food' }"
+                    >Menu</router-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" :to="{ path: '/', hash: '#food' }"
+                    >Menu</router-link
+                  >
                 </li>
               </ul>
               <div class="user_option">

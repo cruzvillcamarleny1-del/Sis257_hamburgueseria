@@ -1,4 +1,79 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, onBeforeUnmount } from 'vue'
+
+let isotopeInstance: any = null
+let owlInited = false
+
+// Isotope (filtros menú)
+onMounted(() => {
+  const w = window as any
+  const $ = w.jQuery || w.$
+  if (!$ || !w.Isotope) {
+    console.warn('Isotope no disponible')
+    return
+  }
+
+  const $grid = $('.grid')
+  if (!$grid.length) {
+    console.warn('No se encontró .grid')
+    return
+  }
+
+  isotopeInstance = new w.Isotope($grid[0], {
+    itemSelector: '.all',
+    layoutMode: 'fitRows',
+  })
+
+  $('.filters_menu li').on('click.menuFilter', function () {
+    const filterValue = $(this).attr('data-filter')
+    isotopeInstance.arrange({ filter: filterValue })
+    $('.filters_menu li').removeClass('active')
+    $(this).addClass('active')
+  })
+})
+
+// OwlCarousel + Nice Select
+onMounted(() => {
+  const w = window as any
+  const $ = w.jQuery || w.$
+  if (!$ || !$.fn) return
+
+  if ($.fn.niceSelect) {
+    $('select.nice-select').niceSelect()
+  }
+
+  const $owl = $('.client_owl-carousel')
+  if ($.fn.owlCarousel && $owl.length && !$owl.hasClass('owl-loaded')) {
+    $owl.owlCarousel({
+      loop: true,
+      autoplay: true,
+      autoplayTimeout: 4500,
+      smartSpeed: 800,
+      items: 1,
+      margin: 0,
+      nav: true,
+      dots: true,
+    })
+    owlInited = true
+  }
+})
+
+// Limpieza
+onBeforeUnmount(() => {
+  const $ = (window as any).jQuery || (window as any).$
+  if ($) {
+    $('.filters_menu li').off('click.menuFilter')
+    if (owlInited) {
+      $('.client_owl-carousel').trigger('destroy.owl.carousel')
+      owlInited = false
+    }
+  }
+  if (isotopeInstance) {
+    isotopeInstance.destroy()
+    isotopeInstance = null
+  }
+})
+</script>
 
 <template>
   <div>
@@ -151,7 +226,7 @@
 
     <!-- food section -->
 
-    <section class="food_section layout_padding-bottom">
+    <section id="food" class="food_section layout_padding-bottom">
       <div class="container">
         <div class="heading_container heading_center">
           <h2>Our Menu</h2>
@@ -845,7 +920,7 @@
 
     <!-- about section -->
 
-    <section class="about_section layout_padding">
+    <section id="about" class="about_section layout_padding">
       <div class="container">
         <div class="row">
           <div class="col-md-6">
@@ -875,7 +950,7 @@
     <!-- end about section -->
 
     <!-- book section -->
-    <section class="book_section layout_padding">
+    <section id="book" class="book_section layout_padding">
       <div class="container">
         <div class="heading_container">
           <h2>Book A Table</h2>
@@ -968,3 +1043,5 @@
     <!-- end client section -->
   </div>
 </template>
+
+<style></style>
