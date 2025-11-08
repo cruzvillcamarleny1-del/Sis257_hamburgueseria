@@ -1,10 +1,17 @@
 @import './base.css';
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
 }
 
 a,
@@ -23,13 +30,13 @@ a,
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
-    place-items: center;
+    display: block;
+    place-items: unset;
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    display: block;
+    grid-template-columns: none;
+    padding: 0;
   }
 }
