@@ -188,29 +188,13 @@ defineExpose({ obtenerLista })
 <style scoped>
 .productos-container {
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    #ff6b35 0%,
-    #f7931e 25%,
-    #ff8c42 50%,
-    #e8722e 75%,
-    #d4621a 100%
-  );
-  min-height: 100vh;
+  background: transparent;
+  min-height: auto;
   position: relative;
 }
 
 .productos-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(255, 107, 53, 0.3) 0%, transparent 50%);
-  pointer-events: none;
+  display: none;
 }
 
 /* Sección de búsqueda */
@@ -228,22 +212,22 @@ defineExpose({ obtenerLista })
 }
 
 .search-input-group {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
   border-radius: 25px;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.4);
 }
 
 .search-addon {
-  background: linear-gradient(45deg, #ff6b35, #f7931e) !important;
+  background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%) !important;
   border: none !important;
-  color: white !important;
+  color: #1a1a2e !important;
   padding: 1rem !important;
 }
 
 .search-icon {
   font-size: 1.2rem;
-  color: white;
+  color: #1a1a2e;
 }
 
 .search-input {
@@ -261,7 +245,7 @@ defineExpose({ obtenerLista })
 }
 
 .search-input:focus {
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
   background: white !important;
 }
 
@@ -274,27 +258,19 @@ defineExpose({ obtenerLista })
 }
 
 .table-wrapper {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.15),
-    0 8px 20px rgba(255, 107, 53, 0.2);
+  background: white;
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  max-width: 1400px;
+  backdrop-filter: none;
+  border: none;
+  max-width: 100%;
   width: 100%;
   position: relative;
 }
 
 .table-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%);
+  display: none;
 }
 
 /* Estilos de tabla */
@@ -306,7 +282,7 @@ defineExpose({ obtenerLista })
 }
 
 .table-header {
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  background: linear-gradient(135deg, #393e46 0%, #222831 100%);
   color: white;
 }
 
@@ -328,7 +304,7 @@ defineExpose({ obtenerLista })
   top: 25%;
   height: 50%;
   width: 1px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 215, 0, 0.35);
 }
 
 .table-header th:last-child::after {
@@ -338,31 +314,31 @@ defineExpose({ obtenerLista })
 .table-body .producto-row {
   background: white;
   transition: all 0.3s ease;
-  border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+  border-bottom: 1px solid rgba(57, 62, 70, 0.1);
 }
 
 .table-body .producto-row:hover {
-  background: linear-gradient(90deg, rgba(255, 107, 53, 0.05) 0%, rgba(247, 147, 30, 0.05) 100%);
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.12) 0%, rgba(255, 235, 59, 0.12) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.1);
+  box-shadow: 0 5px 18px rgba(255, 215, 0, 0.25);
 }
 
 .table-body td {
   padding: 1.2rem 1rem;
-  text-align: center;
+  text-align: centrer;
   vertical-align: middle;
   border: none;
 }
 
 /* Estilos específicos por columna */
 .numero-badge {
-  background: linear-gradient(45deg, #ff6b35, #f7931e);
-  color: white;
+  background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%);
+  color: #1a1a2e;
   padding: 0.5rem 0.8rem;
   border-radius: 20px;
   font-weight: 700;
   font-size: 0.9rem;
-  box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
 }
 
 .imagen-container {
@@ -376,8 +352,8 @@ defineExpose({ obtenerLista })
   height: 80px;
   object-fit: cover;
   border-radius: 15px;
-  border: 3px solid #ff6b35;
-  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+  border: 3px solid #ffd700;
+  box-shadow: 0 5px 18px rgba(255, 215, 0, 0.35);
   transition: transform 0.3s ease;
 }
 
@@ -388,24 +364,24 @@ defineExpose({ obtenerLista })
 .no-imagen {
   width: 80px;
   height: 80px;
-  background: linear-gradient(45deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1));
-  border: 2px dashed #ff6b35;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 235, 59, 0.1));
+  border: 2px dashed #ffd700;
   border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff6b35;
+  color: #ffd700;
   font-size: 2rem;
 }
 
 .producto-nombre {
   font-weight: 700;
-  color: #333;
+  color: #222831;
   font-size: 1.1rem;
 }
 
 .producto-descripcion {
-  color: #666;
+  color: #6e6e6e;
   font-size: 0.95rem;
   max-width: 200px;
   display: inline-block;
@@ -415,17 +391,17 @@ defineExpose({ obtenerLista })
 }
 
 .precio-badge {
-  background: linear-gradient(45deg, #ff8c42, #f7931e);
-  color: white;
+  background: linear-gradient(135deg, #ffd700 0%, #ffc107 50%, #ffeb3b 100%);
+  color: #1a1a2e;
   padding: 0.6rem 1rem;
   border-radius: 25px;
   font-weight: 700;
   font-size: 1.1rem;
-  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
+  box-shadow: 0 4px 14px rgba(255, 215, 0, 0.4);
 }
 
 .stock-badge {
-  background: linear-gradient(45deg, #4caf50, #45a049);
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
   color: white;
   padding: 0.5rem 0.8rem;
   border-radius: 20px;
@@ -435,8 +411,8 @@ defineExpose({ obtenerLista })
 }
 
 .stock-badge.stock-bajo {
-  background: linear-gradient(45deg, #f44336, #d32f2f);
-  box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+  background: linear-gradient(135deg, #f44336, #e57373);
+  box-shadow: 0 3px 10px rgba(244, 67, 54, 0.35);
 }
 
 .acciones-container {
@@ -447,23 +423,23 @@ defineExpose({ obtenerLista })
 }
 
 .btn-editar {
-  background: linear-gradient(45deg, #ff6b35, #f7931e) !important;
+  background: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%) !important;
   border: none !important;
-  color: white !important;
+  color: #1a1a2e !important;
   width: 40px !important;
   height: 40px !important;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4) !important;
   transition: all 0.3s ease !important;
 }
 
 .btn-editar:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 18px rgba(255, 107, 53, 0.4) !important;
-  background: linear-gradient(45deg, #f7931e, #ff8c42) !important;
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.55) !important;
+  background: linear-gradient(135deg, #ffeb3b 0%, #ffd700 100%) !important;
 }
 
 .btn-eliminar {
-  background: linear-gradient(45deg, #f44336, #d32f2f) !important;
+  background: linear-gradient(135deg, #f44336, #e57373) !important;
   border: none !important;
   color: white !important;
   width: 40px !important;
@@ -474,14 +450,14 @@ defineExpose({ obtenerLista })
 
 .btn-eliminar:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 18px rgba(244, 67, 54, 0.4) !important;
-  background: linear-gradient(45deg, #d32f2f, #c62828) !important;
+  box-shadow: 0 6px 18px rgba(244, 67, 54, 0.45) !important;
+  background: linear-gradient(135deg, #e57373, #f44336) !important;
 }
 
 /* No resultados */
 .no-resultados {
   padding: 3rem 2rem !important;
-  background: rgba(255, 107, 53, 0.05);
+  background: rgba(255, 215, 0, 0.06);
 }
 
 .no-resultados-content {
@@ -489,20 +465,20 @@ defineExpose({ obtenerLista })
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  color: #666;
+  color: #6d6d6d;
 }
 
 .no-resultados-icon {
   font-size: 3rem;
-  color: #ff6b35;
-  opacity: 0.7;
+  color: #ffd700;
+  opacity: 0.8;
 }
 
 .no-resultados-content p {
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: #1a1a2e;
 }
 
 .no-resultados-content small {
@@ -521,14 +497,14 @@ defineExpose({ obtenerLista })
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #ff6b35;
+  color: #f44336;
   font-weight: 700;
   font-size: 1.2rem;
 }
 
 .dialog-icon {
   font-size: 1.5rem;
-  color: #ff6b35;
+  color: #f44336;
 }
 
 .dialog-content {
@@ -543,7 +519,7 @@ defineExpose({ obtenerLista })
 }
 
 .producto-highlight {
-  color: #ff6b35;
+  color: #ffd700;
   font-weight: 700;
 }
 
@@ -563,8 +539,8 @@ defineExpose({ obtenerLista })
 
 .btn-cancelar {
   background: transparent !important;
-  border: 2px solid #ddd !important;
-  color: #666 !important;
+  border: 2px solid #393e46 !important;
+  color: #656363 !important;
   padding: 0.8rem 1.5rem !important;
   border-radius: 25px !important;
   font-weight: 600 !important;
@@ -572,13 +548,13 @@ defineExpose({ obtenerLista })
 }
 
 .btn-cancelar:hover {
-  border-color: #ff6b35 !important;
-  color: #ff6b35 !important;
-  background: rgba(255, 107, 53, 0.05) !important;
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+  background: rgba(255, 215, 0, 0.1) !important;
 }
 
 .btn-confirmar-eliminar {
-  background: linear-gradient(45deg, #f44336, #d32f2f) !important;
+  background: linear-gradient(135deg, #f44336, #e57373) !important;
   border: none !important;
   color: white !important;
   padding: 0.8rem 1.5rem !important;
@@ -591,7 +567,7 @@ defineExpose({ obtenerLista })
 .btn-confirmar-eliminar:hover {
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4) !important;
-  background: linear-gradient(45deg, #d32f2f, #c62828) !important;
+  background: linear-gradient(135deg, #e57373, #f44336) !important;
 }
 
 /* Responsive */

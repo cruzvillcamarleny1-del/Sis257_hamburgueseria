@@ -17,9 +17,12 @@ export class AuthService {
     const usuarioOk = await this.usuarioService.validate(usuario, clave);
 
     const payload = { sub: usuarioOk.id };
-    const access_token = this.getAccessToken(payload);
+    const access_token = await this.getAccessToken(payload);
 
-    return { ...usuarioOk, access_token };
+    return {
+      access_token,
+      usuario: usuarioOk,
+    };
   }
 
   async getAccessToken(payload: JwtPayload) {

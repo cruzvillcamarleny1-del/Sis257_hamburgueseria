@@ -55,49 +55,38 @@ async function handleSave() {
 </script>
 
 <template>
-  <div class="pizzeria-dialog-container">
+  <div class="dialog-container">
     <Dialog
       v-model:visible="dialogVisible"
-      :header="props.modoEdicion ? '🍕 Editar Cliente' : '🍕 Nuevo Cliente'"
-      class="pizzeria-dialog"
+      :header="props.modoEdicion ? 'Editar Cliente' : 'Crear Cliente'"
+      class="producto-dialog"
       :style="{ width: '35rem' }"
-      :modal="true"
-      :closable="true"
+      modal
+      :closable="false"
     >
-      <!-- Header personalizado -->
       <template #header>
-        <div class="custom-header">
+        <div class="dialog-header-custom">
           <div class="header-icon">
-            <span class="pizza-emoji">🍕</span>
+            <i :class="props.modoEdicion ? 'pi pi-pencil' : 'pi pi-plus'"></i>
           </div>
-          <div class="header-text">
-            <h2 class="dialog-title">
-              {{ props.modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' }}
-            </h2>
-            <p class="dialog-subtitle">
-              {{
-                props.modoEdicion
-                  ? 'Actualiza la información del cliente'
-                  : 'Agrega un nuevo cliente a tu pizzería'
-              }}
-            </p>
-          </div>
+          <h3 class="header-title">
+            {{ props.modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' }}
+          </h3>
         </div>
       </template>
 
-      <!-- Contenido del formulario -->
-      <div class="form-container">
+      <div class="dialog-content">
         <!-- Campo Nombre -->
-        <div class="form-field">
-          <label for="nombre" class="form-label">
-            <i class="pi pi-user label-icon"></i>
+        <div class="field-container">
+          <label for="nombre" class="field-label">
+            <i class="pi pi-user field-icon"></i>
             Nombre
           </label>
           <div class="input-wrapper">
             <InputText
               id="nombre"
               v-model="cliente.nombre"
-              class="pizzeria-input"
+              class="styled-input"
               placeholder="Ingresa el nombre..."
               autocomplete="off"
               autofocus
@@ -106,16 +95,16 @@ async function handleSave() {
         </div>
 
         <!-- Campo Apellido -->
-        <div class="form-field">
-          <label for="apellido" class="form-label">
-            <i class="pi pi-users label-icon"></i>
+        <div class="field-container">
+          <label for="apellido" class="field-label">
+            <i class="pi pi-users field-icon"></i>
             Apellido
           </label>
           <div class="input-wrapper">
             <InputText
               id="apellido"
               v-model="cliente.apellido"
-              class="pizzeria-input"
+              class="styled-input"
               placeholder="Ingresa el apellido..."
               autocomplete="off"
             />
@@ -123,16 +112,16 @@ async function handleSave() {
         </div>
 
         <!-- Campo Teléfono -->
-        <div class="form-field">
-          <label for="telefono" class="form-label">
-            <i class="pi pi-phone label-icon"></i>
+        <div class="field-container">
+          <label for="telefono" class="field-label">
+            <i class="pi pi-phone field-icon"></i>
             Teléfono
           </label>
           <div class="input-wrapper">
             <InputText
               id="telefono"
               v-model="cliente.telefono"
-              class="pizzeria-input"
+              class="styled-input"
               placeholder="Ej: +591 12345678"
               autocomplete="off"
             />
@@ -140,16 +129,16 @@ async function handleSave() {
         </div>
 
         <!-- Campo Dirección -->
-        <div class="form-field">
-          <label for="direccion" class="form-label">
-            <i class="pi pi-map-marker label-icon"></i>
+        <div class="field-container">
+          <label for="direccion" class="field-label">
+            <i class="pi pi-map-marker field-icon"></i>
             Dirección
           </label>
           <div class="input-wrapper">
             <InputText
               id="direccion"
               v-model="cliente.direccion"
-              class="pizzeria-input"
+              class="styled-input"
               placeholder="Dirección de entrega..."
               autocomplete="off"
             />
@@ -157,21 +146,20 @@ async function handleSave() {
         </div>
       </div>
 
-      <!-- Footer con botones -->
       <template #footer>
-        <div class="dialog-footer">
+        <div class="dialog-footer-custom">
           <Button
             type="button"
             label="Cancelar"
             icon="pi pi-times"
-            class="cancel-btn"
+            class="btn-cancelar"
             @click="dialogVisible = false"
           />
           <Button
             type="button"
-            label="Guardar"
-            icon="pi pi-save"
-            class="save-btn"
+            :label="props.modoEdicion ? 'Actualizar' : 'Guardar'"
+            :icon="props.modoEdicion ? 'pi pi-check' : 'pi pi-save'"
+            class="btn-guardar"
             @click="handleSave"
           />
         </div>
@@ -179,225 +167,179 @@ async function handleSave() {
     </Dialog>
   </div>
 </template>
-
+// ...existing code...
 <style scoped>
-.pizzeria-dialog-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.dialog-container {
+  position: relative;
 }
 
-/* Estilos del Dialog principal */
-:deep(.pizzeria-dialog) {
-  border-radius: 20px !important;
+/* Estilos del Dialog - Fondo blanco (ProductoSave) */
+:deep(.producto-dialog) {
+  border-radius: 25px !important;
   overflow: hidden !important;
-  box-shadow: 0 25px 50px rgba(255, 107, 53, 0.3) !important;
-  border: 3px solid #ffe4d6 !important;
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 190, 51, 0.3) !important;
+  background: #ffffff !important;
 }
 
-:deep(.pizzeria-dialog .p-dialog-header) {
-  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%) !important;
+:deep(.producto-dialog .p-dialog-header) {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%) !important;
   border: none !important;
   padding: 0 !important;
-  position: relative !important;
-  overflow: hidden !important;
+  border-radius: 0 !important;
 }
 
-:deep(.pizzeria-dialog .p-dialog-header::before) {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="80" r="2.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>')
-    repeat;
-  animation: sparkle 3s ease-in-out infinite;
+:deep(.producto-dialog .p-dialog-content) {
+  padding: 2rem !important;
+  background: #ffffff !important;
 }
 
-@keyframes sparkle {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-:deep(.pizzeria-dialog .p-dialog-content) {
-  background: linear-gradient(135deg, #fff8f0 0%, #ffeee6 100%) !important;
-  padding: 2.5rem !important;
+:deep(.producto-dialog .p-dialog-footer) {
+  background: #ffffff !important;
   border: none !important;
-}
-
-:deep(.pizzeria-dialog .p-dialog-footer) {
-  background: white !important;
-  border-top: 3px solid #ffe4d6 !important;
-  padding: 1.5rem 2.5rem !important;
+  padding: 1.5rem 2rem !important;
+  border-top: 1px solid rgba(255, 190, 51, 0.3) !important;
 }
 
 /* Header personalizado */
-.custom-header {
+.dialog-header-custom {
   display: flex;
   align-items: center;
-  padding: 2rem;
-  color: white;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  color: #222831;
+  width: 100%;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
 }
-
+.dialog-header-custom::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ffbe33 0%, #ffa500 50%, #ffbe33 100%);
+}
 .header-icon {
-  margin-right: 1.5rem;
-}
-
-.pizza-emoji {
-  font-size: 3rem;
-  display: inline-block;
-  animation: bounce 2s ease-in-out infinite;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  40% {
-    transform: translateY(-8px) rotate(-5deg);
-  }
-  60% {
-    transform: translateY(-4px) rotate(5deg);
-  }
-}
-
-.header-text {
-  flex: 1;
-}
-
-.dialog-title {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
-}
-
-.dialog-subtitle {
-  margin: 0.5rem 0 0 0;
-  font-size: 1rem;
-  opacity: 0.9;
-  font-weight: 300;
-}
-
-/* Contenedor del formulario */
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-/* Campos del formulario */
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.form-label {
+  background: linear-gradient(135deg, #ffbe33, #ffa500);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
-  font-weight: 600;
-  color: #ff6b35;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #222831;
+  box-shadow: 0 4px 15px rgba(255, 190, 51, 0.4);
+}
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #222831;
+}
+
+/* Contenido y campos */
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: #222831;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+.field-icon {
+  color: #ffbe33;
   font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
-
-.label-icon {
-  margin-right: 0.75rem;
-  font-size: 1.2rem;
-  color: #ff8c42;
-}
-
 .input-wrapper {
   position: relative;
 }
 
-/* Estilos de inputs */
-:deep(.pizzeria-input) {
+/* Inputs oscuros (ProductoSave) */
+:deep(.styled-input) {
   width: 100% !important;
-  padding: 1rem 1.25rem !important;
-  border: 2px solid #ffe4d6 !important;
-  border-radius: 12px !important;
+  padding: 1rem 1.5rem !important;
+  border: 2px solid #393e46 !important;
+  border-radius: 15px !important;
   font-size: 1rem !important;
-  background: white !important;
-  color: #333 !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1) !important;
+  background: #222831 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
-
-:deep(.pizzeria-input:focus) {
-  border-color: #ff6b35 !important;
+:deep(.styled-input:focus) {
+  border-color: #ffbe33 !important;
   box-shadow:
-    0 0 0 3px rgba(255, 107, 53, 0.2),
-    0 4px 12px rgba(255, 107, 53, 0.15) !important;
+    0 0 0 3px rgba(255, 190, 51, 0.2),
+    0 4px 20px rgba(255, 190, 51, 0.3) !important;
   outline: none !important;
-  transform: translateY(-1px) !important;
+}
+:deep(.styled-input::placeholder) {
+  color: #999 !important;
+  font-style: italic !important;
 }
 
-:deep(.pizzeria-input:hover) {
-  border-color: #ff8c42 !important;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15) !important;
-}
-
-/* Footer del dialog */
-.dialog-footer {
+/* Footer botones */
+.dialog-footer-custom {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  align-items: center;
 }
-
-/* Botón Cancelar */
-:deep(.cancel-btn) {
-  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%) !important;
-  border: none !important;
-  color: white !important;
-  padding: 0.875rem 2rem !important;
+.btn-cancelar {
+  background: transparent !important;
+  border: 2px solid #393e46 !important;
+  color: #222831 !important;
+  padding: 0.8rem 1.5rem !important;
   border-radius: 25px !important;
   font-weight: 600 !important;
-  font-size: 1rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3) !important;
+  font-size: 0.95rem !important;
 }
-
-:deep(.cancel-btn:hover) {
+.btn-cancelar:hover {
+  border-color: #ffbe33 !important;
+  color: #ffbe33 !important;
+  background: rgba(255, 190, 51, 0.1) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4) !important;
-  filter: brightness(1.1) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
 }
-
-/* Botón Guardar */
-:deep(.save-btn) {
-  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%) !important;
+.btn-guardar {
+  background: linear-gradient(45deg, #ffbe33, #ffa500) !important;
   border: none !important;
-  color: white !important;
-  padding: 0.875rem 2rem !important;
+  color: #222831 !important;
+  padding: 0.8rem 2rem !important;
   border-radius: 25px !important;
-  font-weight: 600 !important;
-  font-size: 1rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  box-shadow: 0 5px 20px rgba(255, 190, 51, 0.4) !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4) !important;
-  position: relative !important;
-  overflow: hidden !important;
+  position: relative;
+  overflow: hidden;
 }
-
-:deep(.save-btn::before) {
+.btn-guardar:hover {
+  background: linear-gradient(45deg, #ffa500, #ffbe33) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(255, 190, 51, 0.5) !important;
+}
+.btn-guardar:active {
+  transform: translateY(-1px) !important;
+}
+.btn-guardar::before {
   content: '';
   position: absolute;
   top: 0;
@@ -405,105 +347,73 @@ async function handleSave() {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s ease;
+  transition: left 0.5s ease;
 }
-
-:deep(.save-btn:hover::before) {
+.btn-guardar:hover::before {
   left: 100%;
 }
 
-:deep(.save-btn:hover) {
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5) !important;
-  filter: brightness(1.1) !important;
-}
-
-:deep(.save-btn:active) {
-  transform: translateY(0) scale(0.98) !important;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  :deep(.pizzeria-dialog) {
-    width: 95vw !important;
-    max-width: 95vw !important;
-  }
-
-  .custom-header {
-    padding: 1.5rem;
-  }
-
-  .dialog-title {
-    font-size: 1.5rem;
-  }
-
-  .pizza-emoji {
-    font-size: 2.5rem;
-  }
-
-  :deep(.pizzeria-dialog .p-dialog-content) {
-    padding: 1.5rem !important;
-  }
-
-  .form-container {
-    gap: 1.5rem;
-  }
-
-  .dialog-footer {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  :deep(.cancel-btn),
-  :deep(.save-btn) {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-}
-
-/* Animaciones de entrada */
-:deep(.pizzeria-dialog) {
-  animation: dialogEnter 0.4s ease-out;
-}
-
-@keyframes dialogEnter {
+/* Animación */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: scale(0.8) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* Efectos adicionales */
-.form-field {
-  animation: slideInUp 0.3s ease-out forwards;
-  opacity: 0;
-}
-
-.form-field:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.form-field:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.form-field:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.form-field:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+:deep(.producto-dialog) {
+  animation: fadeInUp 0.4s ease-out !important;
+}
+.field-container {
+  animation: fadeInUp 0.6s ease-out !important;
+}
+.field-container:nth-child(1) {
+  animation-delay: 0.1s !important;
+}
+.field-container:nth-child(2) {
+  animation-delay: 0.2s !important;
+}
+.field-container:nth-child(3) {
+  animation-delay: 0.3s !important;
+}
+.field-container:nth-child(4) {
+  animation-delay: 0.4s !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  :deep(.producto-dialog) {
+    width: 95% !important;
+    max-width: 500px !important;
+  }
+  .dialog-header-custom {
+    padding: 1rem 1.5rem !important;
+  }
+  .header-icon {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1.2rem !important;
+  }
+  .header-title {
+    font-size: 1.2rem !important;
+  }
+  :deep(.producto-dialog .p-dialog-content) {
+    padding: 1.5rem !important;
+  }
+  :deep(.producto-dialog .p-dialog-footer) {
+    padding: 1rem 1.5rem !important;
+  }
+  .dialog-footer-custom {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  .btn-cancelar,
+  .btn-guardar {
+    width: 100% !important;
+    justify-content: center !important;
   }
 }
 </style>

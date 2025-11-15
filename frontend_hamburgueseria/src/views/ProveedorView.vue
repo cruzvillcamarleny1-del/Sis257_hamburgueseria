@@ -29,28 +29,28 @@ function handleCloseDialog() {
 
 <template>
   <div class="proveedor-container">
-    <!-- Header Section -->
+    <!-- Header con diseño atractivo -->
     <div class="header-section">
       <div class="header-content">
         <div class="title-wrapper">
-          <div class="icon-wrapper">
-            <i class="pi pi-users"></i>
-          </div>
-          <h1 class="main-title">Gestión de Proveedores</h1>
-          <p class="subtitle">Administra y organiza tu red de proveedores</p>
+          <i class="pi pi-truck header-icon"></i>
+          <h1 class="main-title">Proveedores</h1>
+          <p class="subtitle">Gestiona los proveedores de tu hamburguesería</p>
         </div>
-        <Button
-          label="Nuevo Proveedor"
-          icon="pi pi-plus"
-          @click="handleCreate"
-          class="create-button"
-        />
+        <div class="action-wrapper">
+          <Button
+            label="Nuevo Proveedor"
+            icon="pi pi-plus"
+            @click="handleCreate"
+            class="create-button"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- Content Section -->
-    <div class="content-section">
-      <div class="list-container">
+    <!-- Contenido principal -->
+    <div class="main-content">
+      <div class="content-card">
         <ProveedorList ref="proveedorListRef" @edit="handleEdit" />
       </div>
     </div>
@@ -63,157 +63,235 @@ function handleCloseDialog() {
       @guardar="handleGuardar"
       @close="handleCloseDialog"
     />
+
+    <!-- Decoración de fondo -->
+    <div class="background-decoration">
+      <div class="burger-icon icon-1">🍔</div>
+      <div class="burger-icon icon-2">🍟</div>
+      <div class="burger-icon icon-3">🥤</div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .proveedor-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #fff5f0 0%, #ffe8d6 100%);
+  background: linear-gradient(
+    135deg,
+    #222831 0%,
+    #393e46 25%,
+    #222831 50%,
+    #393e46 75%,
+    #222831 100%
+  );
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .proveedor-container::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 300px;
-  background: linear-gradient(135deg, #ff8c00 0%, #ff6b35 50%, #ff4500 100%);
-  z-index: 1;
-  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(255, 193, 7, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 193, 7, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .header-section {
+  padding: 2rem 1.5rem;
   position: relative;
   z-index: 2;
-  padding: 2rem 2rem 1rem;
 }
 
 .header-content {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
+  flex-wrap: wrap;
   gap: 2rem;
 }
 
 .title-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex: 1;
+  min-width: 300px;
 }
 
-.icon-wrapper {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+.header-icon {
+  font-size: 2.5rem;
+  color: #ffbe33;
   margin-bottom: 1rem;
-}
-
-.icon-wrapper i {
-  font-size: 1.8rem;
-  color: white;
+  display: block;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .main-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white;
+  font-size: 3rem;
+  font-weight: 800;
+  color: #eeeeee;
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
   letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-  font-weight: 400;
+  font-size: 1.2rem;
+  color: rgba(255, 190, 51, 0.9);
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.action-wrapper {
+  flex-shrink: 0;
 }
 
 .create-button {
-  background: white !important;
-  color: #ff6b35 !important;
-  border: 3px solid white !important;
-  padding: 0.75rem 2rem !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
+  background: linear-gradient(45deg, #ffbe33 0%, #ffa500 100%) !important;
+  border: none !important;
+  color: #222831 !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  padding: 1rem 2rem !important;
   border-radius: 50px !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.3s ease !important;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 4px 10px rgba(255, 190, 51, 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .create-button:hover {
-  background: #ff6b35 !important;
-  color: white !important;
-  border-color: #ff6b35 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4) !important;
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.4),
+    0 6px 15px rgba(255, 190, 51, 0.6) !important;
+  background: linear-gradient(45deg, #ffa500 0%, #ffbe33 100%) !important;
 }
 
 .create-button:active {
-  transform: translateY(0) !important;
+  transform: translateY(-1px) !important;
 }
 
-.content-section {
+.main-content {
+  padding: 0 1.5rem 2rem;
   position: relative;
   z-index: 2;
-  padding: 2rem;
-  margin-top: 1rem;
 }
 
-.list-container {
+.content-card {
   max-width: 1200px;
   margin: 0 auto;
-  background: white;
+  background: rgba(238, 238, 238, 0.98);
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.1);
-  border: 2px solid rgba(255, 140, 0, 0.1);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(255, 190, 51, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 190, 51, 0.2);
   overflow: hidden;
   position: relative;
 }
 
-.list-container::before {
+.content-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #ff8c00 0%, #ff6b35 50%, #ff4500 100%);
-  z-index: 1;
+  background: linear-gradient(90deg, #ffbe33 0%, #ffa500 50%, #ffbe33 100%);
 }
 
-/* Animaciones */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+/* Decoración de fondo */
+.background-decoration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.burger-icon {
+  position: absolute;
+  font-size: 4rem;
+  opacity: 0.5;
+  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(2px 2px 8px rgba(255, 190, 51, 0.5));
+  text-shadow: 0 0 20px rgba(255, 190, 51, 0.6);
+}
+
+.icon-1 {
+  top: 20%;
+  left: 2%;
+  animation-delay: 0s;
+}
+.icon-2 {
+  top: 60%;
+  right: 2%;
+  animation-delay: 2s;
+  font-size: 3rem;
+}
+.icon-3 {
+  bottom: 1%;
+  left: 5%;
+  animation-delay: 4s;
+  font-size: 5rem;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
   }
-  to {
+  50% {
+    transform: translateY(-20px) rotate(10deg);
+  }
+}
+
+/* Animaciones adicionales */
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.header-content {
-  animation: fadeInUp 0.8s ease-out;
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.list-container {
-  animation: fadeInUp 0.8s ease-out 0.2s both;
+.header-section {
+  animation: slideInFromTop 0.8s ease-out;
+}
+
+.content-card {
+  animation: slideInFromBottom 0.8s ease-out 0.2s both;
+}
+
+/* Hover en card */
+.content-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.35),
+    0 10px 25px rgba(255, 190, 51, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Responsive */
@@ -223,45 +301,39 @@ function handleCloseDialog() {
     text-align: center;
     gap: 1.5rem;
   }
-
-  .main-title {
-    font-size: 2rem;
+  .title-wrapper {
+    min-width: auto;
   }
-
+  .main-title {
+    font-size: 2.2rem;
+  }
   .subtitle {
     font-size: 1rem;
   }
-
   .create-button {
-    padding: 0.6rem 1.5rem !important;
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
+    padding: 0.8rem 1.5rem !important;
   }
-
-  .content-section {
-    padding: 1rem;
+  .burger-icon {
+    font-size: 2.5rem;
   }
+  .icon-3 {
+    font-size: 3rem;
+  }
+}
 
+@media (max-width: 480px) {
   .header-section {
-    padding: 1.5rem 1rem 0.5rem;
+    padding: 1.5rem 1rem;
   }
-}
-
-/* Efectos adicionales */
-.proveedor-container::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(255, 140, 0, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.list-container:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(255, 107, 53, 0.15);
-  transition: all 0.3s ease;
+  .main-content {
+    padding: 0 1rem 1.5rem;
+  }
+  .main-title {
+    font-size: 1.8rem;
+  }
+  .content-card {
+    border-radius: 15px;
+  }
 }
 </style>

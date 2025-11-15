@@ -28,25 +28,35 @@ function handleCloseDialog() {
 </script>
 
 <template>
-  <div class="pizzeria-container">
-    <!-- Header con diseño de pizzería -->
+  <div class="clientes-container">
+    <!-- Header -->
     <div class="header-section">
-      <div class="pizza-icon">🍕</div>
-      <h1 class="main-title">Gestión de Clientes</h1>
-      <p class="subtitle">Administra tus clientes de manera fácil y rápida</p>
+      <div class="header-content">
+        <div class="title-wrapper">
+          <i class="pi pi-users header-icon"></i>
+          <h1 class="main-title">Clientes</h1>
+          <p class="subtitle">Administra los clientes de tu hamburguesería</p>
+        </div>
+        <div class="action-wrapper">
+          <Button
+            label="Nuevo Cliente"
+            icon="pi pi-plus"
+            @click="handleCreate"
+            class="create-button"
+            size="large"
+          />
+        </div>
+      </div>
     </div>
 
-    <!-- Botón de crear con estilo pizzería -->
-    <div class="action-section">
-      <Button label="Nuevo Cliente" icon="pi pi-plus" @click="handleCreate" class="create-button" />
+    <!-- Contenido principal -->
+    <div class="main-content">
+      <div class="content-card">
+        <ClienteList ref="clienteListRef" @edit="handleEdit" />
+      </div>
     </div>
 
-    <!-- Lista de clientes centrada -->
-    <div class="content-section">
-      <ClienteList ref="clienteListRef" @edit="handleEdit" class="cliente-list-centered" />
-    </div>
-
-    <!-- Modal de guardar -->
+    <!-- Modal -->
     <ClienteSave
       :mostrar="mostrarDialog"
       :cliente="clienteEdit"
@@ -54,263 +64,265 @@ function handleCloseDialog() {
       @guardar="handleGuardar"
       @close="handleCloseDialog"
     />
+
+    <!-- Decoración de fondo -->
+    <div class="background-decoration">
+      <div class="burger-icon icon-1">🍔</div>
+      <div class="burger-icon icon-2">🍟</div>
+      <div class="burger-icon icon-3">🥤</div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.pizzeria-container {
+.clientes-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #fff8f0 0%, #ffeee6 50%, #ffe4d6 100%);
-  padding: 2rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Header con tema de pizzería */
-.header-section {
-  text-align: center;
-  margin-bottom: 3rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
-  color: white;
+  background: linear-gradient(
+    135deg,
+    #222831 0%,
+    #393e46 25%,
+    #222831 50%,
+    #393e46 75%,
+    #222831 100%
+  );
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-.header-section::before {
+.clientes-container::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  animation: rotate 20s linear infinite;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(255, 193, 7, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 193, 7, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.pizza-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: bounce 2s ease-in-out infinite;
+.header-section {
+  padding: 2rem 1.5rem;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.title-wrapper {
+  flex: 1;
+  min-width: 300px;
+}
+
+.header-icon {
+  font-size: 2.5rem;
+  color: #ffbe33;
+  margin-bottom: 1rem;
+  display: block;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .main-title {
   font-size: 3rem;
-  font-weight: bold;
+  font-weight: 800;
+  color: #eeeeee;
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 1;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .subtitle {
   font-size: 1.2rem;
+  color: rgba(255, 190, 51, 0.9);
   margin: 0.5rem 0 0 0;
-  opacity: 0.9;
-  font-weight: 300;
-  position: relative;
-  z-index: 1;
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Sección de acciones */
-.action-section {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
+.action-wrapper {
+  flex-shrink: 0;
 }
 
 .create-button {
-  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
+  background: linear-gradient(45deg, #ffbe33 0%, #ffa500 100%) !important;
   border: none !important;
-  padding: 1rem 2rem !important;
+  color: #222831 !important;
+  font-weight: 700 !important;
   font-size: 1.1rem !important;
-  font-weight: 600 !important;
-  border-radius: 25px !important;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4) !important;
-  transition: all 0.3s ease !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
+  padding: 1rem 2rem !important;
+  border-radius: 50px !important;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 4px 10px rgba(255, 190, 51, 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .create-button:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6) !important;
-  filter: brightness(1.1) !important;
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.4),
+    0 6px 15px rgba(255, 190, 51, 0.6) !important;
+  background: linear-gradient(45deg, #ffa500 0%, #ffbe33 100%) !important;
 }
 
 .create-button:active {
-  transform: translateY(0) !important;
+  transform: translateY(-1px) !important;
 }
 
-/* Contenido principal centrado */
-.content-section {
-  background: white;
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.1);
-  border: 2px solid #ffe4d6;
+.main-content {
+  padding: 0 1.5rem 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.content-card {
   max-width: 1200px;
   margin: 0 auto;
+  background: rgba(238, 238, 238, 0.98);
+  border-radius: 20px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(255, 190, 51, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 190, 51, 0.2);
+  overflow: hidden;
+  position: relative;
 }
 
-/* Estilos globales para centrar tablas - Estilo Simple */
-:deep(.p-datatable) {
-  margin: 0 auto;
-  border: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffbe33 0%, #ffa500 50%, #ffbe33 100%);
 }
 
-:deep(.p-datatable-header) {
-  display: none !important;
+/* Decoración de fondo */
+.background-decoration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
 }
 
-:deep(.p-datatable-thead > tr > th) {
-  background: transparent !important;
-  color: #666666 !important;
-  font-weight: 600 !important;
-  text-align: left !important;
-  padding: 1rem !important;
-  border: none !important;
-  border-bottom: 2px solid #e0e0e0 !important;
-  text-transform: none !important;
-  letter-spacing: normal !important;
-  font-size: 1rem !important;
+.burger-icon {
+  position: absolute;
+  font-size: 4rem;
+  opacity: 0.5;
+  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(2px 2px 8px rgba(255, 190, 51, 0.5));
+  text-shadow: 0 0 20px rgba(255, 190, 51, 0.6);
 }
 
-:deep(.p-datatable-tbody > tr > td) {
-  text-align: left !important;
-  padding: 1rem !important;
-  border: none !important;
-  border-bottom: 1px solid #f0f0f0 !important;
-  background: transparent !important;
-  transition: background-color 0.3s ease !important;
+.icon-1 {
+  top: 20%;
+  left: 2%;
+  animation-delay: 0s;
+}
+.icon-2 {
+  top: 60%;
+  right: 2%;
+  animation-delay: 2s;
+  font-size: 3rem;
+}
+.icon-3 {
+  bottom: 1%;
+  left: 5%;
+  animation-delay: 4s;
+  font-size: 5rem;
 }
 
-:deep(.p-datatable-tbody > tr:hover) {
-  background-color: #f8f9fa !important;
-}
-
-:deep(.p-datatable-tbody > tr:nth-child(even)) {
-  background-color: transparent !important;
-}
-
-/* Botones de acción en la tabla - Estilo Simple */
-:deep(.p-button) {
-  margin: 0 0.25rem !important;
-  border-radius: 4px !important;
-  padding: 0.4rem 0.8rem !important;
-  font-size: 0.85rem !important;
-  transition: all 0.2s ease !important;
-  border: 1px solid #ddd !important;
-  background: white !important;
-  color: #666 !important;
-}
-
-:deep(.p-button:hover) {
-  background: #f5f5f5 !important;
-  border-color: #ccc !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-:deep(.p-button-info) {
-  background: white !important;
-  border: 1px solid #ddd !important;
-  color: #666 !important;
-}
-
-:deep(.p-button-info:hover) {
-  background: #f5f5f5 !important;
-  border-color: #ccc !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-:deep(.p-button-danger) {
-  background: white !important;
-  border: 1px solid #ddd !important;
-  color: #d32f2f !important;
-}
-
-:deep(.p-button-danger:hover) {
-  background: #fef2f2 !important;
-  border-color: #d32f2f !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .pizzeria-container {
-    padding: 1rem;
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
   }
-
-  .main-title {
-    font-size: 2rem;
-  }
-
-  .pizza-icon {
-    font-size: 3rem;
-  }
-
-  .content-section {
-    padding: 1rem;
-  }
-
-  .create-button {
-    width: 100% !important;
-    max-width: 300px !important;
+  50% {
+    transform: translateY(-20px) rotate(10deg);
   }
 }
 
-/* Animaciones adicionales */
-.cliente-list-centered {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
+/* Animaciones */
+@keyframes slideInFromTop {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(-30px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.header-section {
+  animation: slideInFromTop 0.8s ease-out;
+}
+.content-card {
+  animation: slideInFromBottom 0.8s ease-out 0.2s both;
+}
 
-/* Efectos de hover para el contenedor principal */
-.content-section:hover {
-  box-shadow: 0 6px 25px rgba(255, 107, 53, 0.15);
-  transition: box-shadow 0.3s ease;
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  .title-wrapper {
+    min-width: auto;
+  }
+  .main-title {
+    font-size: 2.2rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+  }
+  .create-button {
+    font-size: 1rem !important;
+    padding: 0.8rem 1.5rem !important;
+  }
+  .burger-icon {
+    font-size: 2.5rem;
+  }
+  .icon-3 {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-section {
+    padding: 1.5rem 1rem;
+  }
+  .main-content {
+    padding: 0 1rem 1.5rem;
+  }
+  .main-title {
+    font-size: 1.8rem;
+  }
+  .content-card {
+    border-radius: 15px;
+  }
 }
 </style>

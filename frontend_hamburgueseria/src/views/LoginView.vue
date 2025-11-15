@@ -110,12 +110,7 @@ function handleImageError(event: Event) {
       <div class="image-section">
         <div class="image-container">
           <!-- Aquí va tu imagen desde el ordenador -->
-          <img
-            src="@/assets/images/pizza-20.jpg"
-            alt="Deliciosa Pizza Italiana"
-            class="hero-image"
-            @error="handleImageError"
-          />
+
           <div class="image-overlay">
             <h2 class="image-title">¡La mejor pizza de la ciudad!</h2>
             <p class="image-subtitle">Desde 2005 deleitando paladares</p>
