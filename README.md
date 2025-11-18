@@ -12,12 +12,11 @@ Atributos:
 
 id
 
-
-nombre
+nombres
 
 descripción
 
-precio
+precios
 
 categoría_id (relación con Categoría)
 
