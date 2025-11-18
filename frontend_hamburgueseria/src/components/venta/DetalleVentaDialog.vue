@@ -36,21 +36,15 @@ const total = computed(() =>
         <!-- Información del cliente -->
         <div class="info-section">
           <div class="info-item">
-            <label class="info-label">
-              <i class="pi pi-user info-icon"></i> Cliente:
-            </label>
+            <label class="info-label"> <i class="pi pi-user info-icon"></i> Cliente: </label>
             <span class="info-value">{{ venta.cliente?.nombre || 'Sin cliente' }}</span>
           </div>
           <div class="info-item">
-            <label class="info-label">
-              <i class="pi pi-user-edit info-icon"></i> Vendedor:
-            </label>
+            <label class="info-label"> <i class="pi pi-user-edit info-icon"></i> Vendedor: </label>
             <span class="info-value">{{ venta.usuario?.usuario || 'Sin vendedor' }}</span>
           </div>
           <div class="info-item">
-            <label class="info-label">
-              <i class="pi pi-calendar info-icon"></i> Fecha:
-            </label>
+            <label class="info-label"> <i class="pi pi-calendar info-icon"></i> Fecha: </label>
             <span class="info-value">{{ venta.fecha }}</span>
           </div>
         </div>
@@ -86,12 +80,7 @@ const total = computed(() =>
 
       <template #footer>
         <div class="dialog-footer">
-          <Button
-            label="Cerrar"
-            icon="pi pi-times"
-            class="btn-cerrar"
-            @click="emit('close')"
-          />
+          <Button label="Cerrar" icon="pi pi-times" class="btn-cerrar" @click="emit('close')" />
         </div>
       </template>
     </Dialog>
@@ -107,13 +96,10 @@ const total = computed(() =>
 .detalle-venta-dialog {
   border-radius: 20px !important;
   overflow: hidden !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 193, 7, 0.2) !important;
-  background: linear-gradient(
-    135deg,
-    #2c2f33 0%,
-    #23272a 50%,
-    #2c2f33 100%
-  ) !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 193, 7, 0.2) !important;
+  background: linear-gradient(135deg, #2c2f33 0%, #23272a 50%, #2c2f33 100%) !important;
 }
 
 .detalle-venta-dialog .p-dialog-header {

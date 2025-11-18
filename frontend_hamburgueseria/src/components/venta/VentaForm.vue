@@ -21,6 +21,19 @@ const idCliente = ref<number>()
 const productoSeleccionado = ref<Producto | null>(null)
 const cantidad = ref(1)
 
+function getUserIdFromToken(): number | undefined {
+  const raw = localStorage.getItem('token') || localStorage.getItem('access_token')
+  if (!raw) return
+  try {
+    const parts = raw.split('.')
+    if (!parts[1]) return
+    const payload = JSON.parse(atob(parts[1]))
+    return payload.sub ?? payload.id ?? payload.userId
+  } catch {
+    return
+  }
+}
+
 const detalle = ref<
   { producto: Producto; cantidad: number; precioUnitario: number; subtotal: number }[]
 >([])
@@ -52,6 +65,7 @@ function cargarDatos() {
     },
   )
   limpiarFormulario()
+  idUsuario.value = getUserIdFromToken() // setear automáticamente
 }
 
 function limpiarFormulario() {
@@ -86,13 +100,18 @@ const agregarProducto = () => {
 }
 
 async function registrarVenta() {
-  if (!idUsuario.value || !idCliente.value || detalle.value.length === 0) {
+  if (!idCliente.value || detalle.value.length === 0) {
     alert('Debe completar todos los campos y agregar al menos un producto')
+    return
+  }
+  const userId = idUsuario.value ?? getUserIdFromToken()
+  if (!userId) {
+    alert('No se pudo determinar el usuario actual')
     return
   }
 
   const venta = {
-    idUsuario: idUsuario.value,
+    idUsuario: userId,
     idCliente: idCliente.value,
     fecha: new Date().toISOString(),
     total: total.value,
@@ -135,7 +154,7 @@ async function registrarVenta() {
       </template>
 
       <div class="dialog-content">
-        <div class="field-container">
+        <div class="field-container" v-if="false">
           <label class="field-label">
             <i class="pi pi-user field-icon"></i>
             Usuario
@@ -165,6 +184,13 @@ async function registrarVenta() {
               optionValue="id"
               class="styled-input"
               placeholder="Seleccionar cliente"
+              appendTo="self"
+              :pt="{
+                label: { style: { color: '#ffffff' } },
+                trigger: { style: { color: '#ffbe33' } },
+                panel: { style: { background: '#222831', border: '1px solid #393e46' } },
+                item: { style: { color: '#eeeeee' } },
+              }"
             />
           </div>
         </div>
@@ -182,6 +208,13 @@ async function registrarVenta() {
                 optionLabel="nombre"
                 placeholder="Seleccionar producto"
                 class="styled-input"
+                appendTo="self"
+                :pt="{
+                  label: { style: { color: '#ffffff' } },
+                  trigger: { style: { color: '#ffbe33' } },
+                  panel: { style: { background: '#222831', border: '1px solid #393e46' } },
+                  item: { style: { color: '#eeeeee' } },
+                }"
               />
               <InputNumber
                 v-model="cantidad"
@@ -507,6 +540,7 @@ async function registrarVenta() {
 }
 .detalle-table th,
 .detalle-table td {
+  color: #222831;
   padding: 0.7rem 0.5rem;
   text-align: center;
   font-size: 1rem;

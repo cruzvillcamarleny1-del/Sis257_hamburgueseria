@@ -239,7 +239,7 @@ defineExpose({ obtenerLista })
   border-spacing: 0;
   position: relative;
 }
-.table-body{
+.table-body {
   color: #1a1a2e;
 }
 

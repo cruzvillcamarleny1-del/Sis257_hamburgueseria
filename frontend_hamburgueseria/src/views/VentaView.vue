@@ -555,8 +555,6 @@ onMounted(cargarVentas)
   color: #9c27b0;
 }
 
-
-
 @keyframes float {
   0%,
   100% {
