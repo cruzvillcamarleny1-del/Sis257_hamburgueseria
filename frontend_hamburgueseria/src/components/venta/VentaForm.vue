@@ -11,10 +11,19 @@ import type { Usuario } from '@/models/usuario'
 
 const props = defineProps<{ mostrar: boolean }>()
 const emit = defineEmits(['cerrar', 'ventaGuardada'])
+const cantidadesPorProducto = ref<{ [id: number]: number }>({})
 
 const usuarios = ref<Usuario[]>([])
 const clientes = ref<Cliente[]>([])
 const productos = ref<Producto[]>([])
+
+const busquedaProducto = ref('')
+
+const productosFiltrados = computed(() =>
+  productos.value.filter((p) =>
+    p.nombre.toLowerCase().includes(busquedaProducto.value.trim().toLowerCase()),
+  ),
+)
 
 const idUsuario = ref<number>()
 const idCliente = ref<number>()
@@ -74,6 +83,24 @@ function limpiarFormulario() {
   productoSeleccionado.value = null
   cantidad.value = 1
   detalle.value = []
+}
+
+function agregarProductoDesdeCard(prod: Producto) {
+  const cantidad = cantidadesPorProducto.value[prod.id] || 1
+
+  if (detalle.value.find((item) => item.producto.id === prod.id)) {
+    alert('Este producto ya fue agregado')
+    return
+  }
+
+  detalle.value.push({
+    producto: prod,
+    cantidad,
+    precioUnitario: Number(prod.precio),
+    subtotal: cantidad * Number(prod.precio),
+  })
+
+  cantidadesPorProducto.value[prod.id] = 1
 }
 
 const agregarProducto = () => {
@@ -185,6 +212,7 @@ async function registrarVenta() {
               class="styled-input"
               placeholder="Seleccionar cliente"
               appendTo="self"
+              filter
               :pt="{
                 label: { style: { color: '#ffffff' } },
                 trigger: { style: { color: '#ffbe33' } },
@@ -201,34 +229,32 @@ async function registrarVenta() {
             Detalle de Venta
           </label>
           <div class="input-wrapper">
-            <div class="detalle-producto-row">
-              <Dropdown
-                v-model="productoSeleccionado"
-                :options="productos"
-                optionLabel="nombre"
-                placeholder="Seleccionar producto"
-                class="styled-input"
-                appendTo="self"
-                :pt="{
-                  label: { style: { color: '#ffffff' } },
-                  trigger: { style: { color: '#ffbe33' } },
-                  panel: { style: { background: '#222831', border: '1px solid #393e46' } },
-                  item: { style: { color: '#eeeeee' } },
-                }"
-              />
-              <InputNumber
-                v-model="cantidad"
-                :min="1"
-                class="styled-input-number cantidad-input"
-                placeholder="Cantidad"
-                showButtons
-              />
-              <Button
-                label="Agregar"
-                icon="pi pi-plus"
-                class="btn-agregar"
-                @click="agregarProducto"
-              />
+            <input
+              v-model="busquedaProducto"
+              type="text"
+              class="buscador-producto"
+              placeholder="Buscar producto..."
+            />
+            <div class="productos-grid">
+              <div v-for="prod in productosFiltrados" :key="prod.id" class="producto-card">
+                <img v-if="prod.imagen" :src="prod.imagen" alt="img" class="producto-img" />
+                <div class="producto-nombre">{{ prod.nombre }}</div>
+                <div class="producto-precio">Bs {{ prod.precio }}</div>
+                <InputNumber
+                  v-model="cantidadesPorProducto[prod.id]"
+                  :min="1"
+                  class="styled-input-number cantidad-input"
+                  placeholder="Cantidad"
+                  showButtons
+                  @update:modelValue="(val) => (cantidadesPorProducto[prod.id] = val)"
+                />
+                <Button
+                  label="Agregar"
+                  icon="pi pi-plus"
+                  class="btn-agregar"
+                  @click="agregarProductoDesdeCard(prod)"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -237,6 +263,7 @@ async function registrarVenta() {
           <table class="detalle-table">
             <thead>
               <tr>
+                <th>Img</th>
                 <th>Producto</th>
                 <th>Cantidad</th>
                 <th>Precio Unitario</th>
@@ -246,6 +273,15 @@ async function registrarVenta() {
             </thead>
             <tbody>
               <tr v-for="(item, index) in detalle" :key="index">
+                <td>
+                  <img
+                    v-if="item.producto.imagen"
+                    :src="item.producto.imagen"
+                    alt="img"
+                    style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px"
+                  />
+                  <span v-else style="color: #aaa">Sin imagen</span>
+                </td>
                 <td>{{ item.producto.nombre }}</td>
                 <td>{{ item.cantidad }}</td>
                 <td>Bs {{ item.precioUnitario }}</td>
@@ -261,7 +297,7 @@ async function registrarVenta() {
                 </td>
               </tr>
               <tr v-if="detalle.length === 0">
-                <td colspan="5" class="no-productos">No hay productos agregados</td>
+                <td colspan="6" class="no-productos">No hay productos agregados</td>
               </tr>
             </tbody>
           </table>
@@ -481,12 +517,11 @@ async function registrarVenta() {
 
 /* Botones de InputNumber */
 :deep(.styled-input-number .p-inputnumber-button) {
-  background: linear-gradient(45deg, #ffbe33, #ffa500) !important;
-  border: none !important;
-  color: #222831 !important;
-  width: 40px !important;
-  transition: all 0.3s ease !important;
-  font-weight: 700 !important;
+  width: 22px !important;
+  height: 22px !important;
+  font-size: 0.85rem !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
 }
 :deep(.styled-input-number .p-inputnumber-button:hover) {
   background: linear-gradient(45deg, #ffa500, #ffbe33) !important;
@@ -532,11 +567,16 @@ async function registrarVenta() {
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(255, 190, 51, 0.12);
+  /* NUEVO: limita la altura y agrega scroll */
+  max-height: 220px; /* ajusta según el alto de tus filas */
+  overflow-y: auto;
 }
 .detalle-table {
   width: 100%;
   border-collapse: collapse;
   background: #ffffff;
+  /* Para que el header quede fijo si quieres: */
+  table-layout: fixed;
 }
 .detalle-table th,
 .detalle-table td {
@@ -659,6 +699,69 @@ async function registrarVenta() {
   left: 100%;
 }
 
+.productos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  /* NUEVO: limita la altura y agrega scroll */
+  max-height: 250px; /* ajusta según tu diseño, 3 filas aprox */
+  overflow-y: auto;
+  padding-right: 8px; /* para que no tape el scroll */
+}
+.producto-card {
+  background: #222831;
+  color: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 140px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid transparent;
+  transition:
+    border 0.2s,
+    box-shadow 0.2s;
+}
+.producto-card.seleccionado {
+  border: 2px solid #ffbe33;
+  box-shadow: 0 4px 16px rgba(255, 190, 51, 0.15);
+}
+.producto-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+.producto-nombre {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
+.producto-precio {
+  color: #ffbe33;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.buscador-producto {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  border: 2px solid #393e46;
+  font-size: 1rem;
+  background: #222831;
+  color: #fff;
+  outline: none;
+  transition: border 0.2s;
+}
+.buscador-producto:focus {
+  border-color: #ffbe33;
+}
+
 /* Animación entrada */
 @keyframes fadeInUp {
   from {
@@ -739,5 +842,23 @@ async function registrarVenta() {
   .total-monto {
     font-size: 1.1rem;
   }
+}
+
+.styled-input-number.cantidad-input {
+  max-width: 60px;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem !important;
+}
+
+:deep(.styled-input-number .p-inputnumber-input) {
+  font-size: 0.85rem !important;
+  padding: 0.3rem 0.5rem !important;
+}
+
+.btn-agregar {
+  padding: 0.25rem 0.7rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 8px !important;
+  margin-top: 0.3rem;
 }
 </style>

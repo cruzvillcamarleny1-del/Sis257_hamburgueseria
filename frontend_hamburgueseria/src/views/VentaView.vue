@@ -25,6 +25,37 @@ async function cargarVentas() {
     console.error('Error al cargar ventas:', error)
   }
 }
+const dtf = new Intl.DateTimeFormat('es-BO', {
+  dateStyle: 'short',
+  timeStyle: 'medium',
+  hour12: false,
+  timeZone: 'America/La_Paz',
+})
+
+function parseFecha(value: any): Date | null {
+  if (!value) return null
+  if (value instanceof Date) return value
+
+  // "HH:mm:ss"
+  if (typeof value === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(value)) {
+    const d = new Date()
+    const [h, m, s] = value.split(':').map(Number)
+    d.setHours(h, m, s, 0)
+    return d
+  }
+
+  // "YYYY-MM-DD"
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return new Date(value + 'T00:00:00')
+  }
+
+  return new Date(value)
+}
+
+function formatFechaHora(value: unknown) {
+  const d = parseFecha(value)
+  return d && !isNaN(d.getTime()) ? dtf.format(d) : '—'
+}
 
 onMounted(cargarVentas)
 </script>
@@ -97,14 +128,14 @@ onMounted(cargarVentas)
                 </template>
               </Column>
 
-              <Column field="fecha" header="Fecha">
+              <Column field="fecha" header="Fecha y hora">
                 <template #header>
                   <div class="header-fecha"><i class="pi pi-calendar"></i></div>
                 </template>
                 <template #body="slotProps">
                   <div class="fecha-container">
                     <i class="pi pi-calendar fecha-icon"></i>
-                    <span>{{ slotProps.data.fecha }}</span>
+                    <span>{{ formatFechaHora(slotProps.data.fecha) }}</span>
                   </div>
                 </template>
               </Column>

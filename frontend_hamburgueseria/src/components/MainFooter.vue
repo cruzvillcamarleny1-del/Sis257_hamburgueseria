@@ -8,29 +8,28 @@
         <div class="row">
           <div class="col-md-4 footer-col">
             <div class="footer_contact">
-              <h4>Contact Us</h4>
+              <h4>Contáctanos</h4>
               <div class="contact_link_box">
                 <a href="">
                   <i class="fa fa-map-marker" aria-hidden="true"></i>
-                  <span> Location </span>
+                  <span> Ubicación </span>
                 </a>
                 <a href="">
                   <i class="fa fa-phone" aria-hidden="true"></i>
-                  <span> Call +01 1234567890 </span>
+                  <span> Tel: +591 70000000 </span>
                 </a>
                 <a href="">
                   <i class="fa fa-envelope" aria-hidden="true"></i>
-                  <span> demo@gmail.com </span>
+                  <span> hamburgueseria@email.com </span>
                 </a>
               </div>
             </div>
           </div>
           <div class="col-md-4 footer-col">
             <div class="footer_detail">
-              <a href="" class="footer-logo"> Feane </a>
+              <a href="" class="footer-logo"> Hamburguesería </a>
               <p>
-                Necessary, making this the first true generator on the Internet. It uses a
-                dictionary of over 200 Latin words, combined with
+                Pasión por las hamburguesas artesanales, ingredientes frescos y atención de calidad. ¡Ven y vive la mejor experiencia hamburguesera de la ciudad!
               </p>
               <div class="footer_social">
                 <a href="">
@@ -52,17 +51,15 @@
             </div>
           </div>
           <div class="col-md-4 footer-col">
-            <h4>Opening Hours</h4>
-            <p>Everyday</p>
-            <p>10.00 Am -10.00 Pm</p>
+            <h4>Horario de Atención</h4>
+            <p>Todos los días</p>
+            <p>10:00 AM - 10:00 PM</p>
           </div>
         </div>
         <div class="footer-info">
           <p>
-            &copy; <span id="displayYear"></span> All Rights Reserved By
-            <a href="https://html.design/">Free Html Templates</a><br /><br />
-            &copy; <span id="displayYear"></span> Distributed By
-            <a href="https://themewagon.com/" target="_blank">ThemeWagon</a>
+            &copy; <span id="displayYear"></span> Todos los derechos reservados<br />
+            Hamburguesería
           </p>
         </div>
       </div>

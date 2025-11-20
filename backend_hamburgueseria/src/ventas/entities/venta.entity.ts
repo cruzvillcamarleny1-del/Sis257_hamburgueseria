@@ -18,7 +18,7 @@ export class Venta {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('date')
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   fecha: Date;
 
   @Column('decimal', { precision: 10, scale: 2 })

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useAuthStore } from '@/stores'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,13 +10,9 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
     {
@@ -50,6 +47,17 @@ const router = createRouter({
     }
     return { top: 0 }
   },
+})
+
+// Guard para rutas privadas
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  const publicPages = ['/', '/login', '/about']
+  const authRequired = !publicPages.includes(to.path)
+  if (authRequired && !authStore.token) {
+    return next('/login')
+  }
+  next()
 })
 
 export default router

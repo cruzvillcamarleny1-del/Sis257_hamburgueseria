@@ -3,6 +3,8 @@ import type { Proveedor } from '@/models/proveedor'
 import http from '@/plugins/axios'
 import { Button, Dialog, InputGroup, InputGroupAddon, InputText } from 'primevue'
 import { computed, onMounted, ref } from 'vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 const ENDPOINT = 'proveedores'
 const proveedores = ref<Proveedor[]>([])
@@ -64,65 +66,92 @@ defineExpose({ obtenerLista })
 
     <!-- Tabla -->
     <div class="table-container">
-      <div class="table-wrapper">
-        <table class="proveedores-table">
-          <thead class="table-header">
-            <tr>
-              <th>Nro.</th>
-              <th>Nombre</th>
-              <th>Teléfono</th>
-              <th>Correo</th>
-              <th>Dirección</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="table-body">
-            <tr
-              v-for="(proveedor, index) in proveedoresFiltrados"
-              :key="proveedor.id"
-              class="table-row"
-            >
-              <td class="number-cell">
-                <span class="numero-badge">{{ index + 1 }}</span>
-              </td>
-              <td class="name-cell">{{ proveedor.nombre }}</td>
-              <td>{{ proveedor.telefono }}</td>
-              <td class="email-cell">{{ proveedor.correo }}</td>
-              <td>{{ proveedor.direccion }}</td>
-              <td class="actions-cell">
-                <div class="acciones">
-                  <Button
-                    icon="pi pi-pencil"
-                    aria-label="Editar"
-                    class="btn-editar"
-                    @click="emitirEdicion(proveedor)"
-                    rounded
-                    size="small"
-                  />
-                  <Button
-                    icon="pi pi-trash"
-                    aria-label="Eliminar"
-                    class="btn-eliminar"
-                    @click="mostrarEliminarConfirm(proveedor)"
-                    rounded
-                    size="small"
-                  />
-                </div>
-              </td>
-            </tr>
-
-            <tr v-if="proveedoresFiltrados.length === 0">
-              <td colspan="6" class="no-resultados">
-                <div class="no-resultados-content">
-                  <i class="pi pi-search no-resultados-icon"></i>
-                  <p>No se encontraron proveedores</p>
-                  <small>Intenta con otro término de búsqueda</small>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        :value="proveedoresFiltrados"
+        class="proveedores-table"
+        paginator
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20]"
+        stripedRows
+        responsiveLayout="scroll"
+      >
+        <Column>
+          <template #header>
+            <span class="th-numero">Nro.</span>
+          </template>
+          <template #body="slotProps">
+            <span class="numero-badge">{{ slotProps.index + 1 }}</span>
+          </template>
+        </Column>
+        <Column field="nombre" sortable>
+          <template #header>
+            <span class="th-nombre">Nombre</span>
+          </template>
+          <template #body="slotProps">
+            <span class="name-cell">{{ slotProps.data.nombre }}</span>
+          </template>
+        </Column>
+        <Column field="telefono" sortable>
+          <template #header>
+            <span class="th-telefono">Teléfono</span>
+          </template>
+          <template #body="slotProps">
+            {{ slotProps.data.telefono }}
+          </template>
+        </Column>
+        <Column field="correo" sortable>
+          <template #header>
+            <span class="th-correo">Correo</span>
+          </template>
+          <template #body="slotProps">
+            <span class="email-cell">{{ slotProps.data.correo }}</span>
+          </template>
+        </Column>
+        <Column field="direccion" sortable>
+          <template #header>
+            <span class="th-direccion">Dirección</span>
+          </template>
+          <template #body="slotProps">
+            {{ slotProps.data.direccion }}
+          </template>
+        </Column>
+        <Column>
+          <template #header>
+            <span class="th-acciones">Acciones</span>
+          </template>
+          <template #body="slotProps">
+            <div class="acciones">
+              <Button
+                icon="pi pi-pencil"
+                aria-label="Editar"
+                class="btn-editar"
+                @click="emitirEdicion(slotProps.data)"
+                rounded
+                size="small"
+              />
+              <Button
+                icon="pi pi-trash"
+                aria-label="Eliminar"
+                class="btn-eliminar"
+                @click="mostrarEliminarConfirm(slotProps.data)"
+                rounded
+                size="small"
+              />
+            </div>
+          </template>
+        </Column>
+        <template #empty>
+          <tr>
+            <td colspan="6" class="no-resultados">
+              <div class="no-resultados-content">
+                <i class="pi pi-search no-resultados-icon"></i>
+                <p>No se encontraron proveedores</p>
+                <small>Intenta con otro término de búsqueda</small>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </DataTable>
     </div>
 
     <!-- Confirmación -->
@@ -494,5 +523,46 @@ defineExpose({ obtenerLista })
     width: 100% !important;
     justify-content: center !important;
   }
+}
+:deep(.p-datatable-thead > tr > th) {
+  background: linear-gradient(120deg, #23272f 60%, #393e46 100%);
+  color: #fff;
+  border: none;
+  border-bottom: 4px solid #ffd700;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 1.1rem 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1px 0 #ffd700;
+  box-shadow: 0 4px 18px 0 rgba(255, 215, 0, 0.09), 0 2px 8px rgba(0,0,0,0.10);
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+:deep(.p-datatable-thead > tr > th:not(:last-child)) {
+  border-right: 1.5px solid rgba(237, 201, 1, 0.18);
+}
+:deep(.p-datatable-thead > tr > th:hover) {
+  box-shadow: 0 6px 24px 0 rgba(255, 215, 0, 0.18), 0 2px 8px rgba(246, 4, 4, 0.13);
+  background: linear-gradient(120deg, rgb(255, 238, 0) 60%, #ffd700 100%);
+  color: #23272f;
+}
+.th-numero,
+.th-nombre,
+.th-telefono,
+.th-correo,
+.th-direccion,
+.th-acciones {
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  color: inherit;
+  padding: 0;
+  background: none;
+  border-radius: 0;
 }
 </style>

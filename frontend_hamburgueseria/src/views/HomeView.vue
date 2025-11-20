@@ -90,14 +90,15 @@ onBeforeUnmount(() => {
                 <div class="row">
                   <div class="col-md-7 col-lg-6">
                     <div class="detail-box">
-                      <h1>Fast Food Restaurant</h1>
+                      <h1>Hamburguesas Deliciosas</h1>
                       <p>
-                        Doloremque, itaque aperiam facilis rerum, commodi, temporibus sapiente ad
-                        mollitia laborum quam quisquam esse error unde. Tempora ex doloremque,
-                        labore, sunt repellat dolore, iste magni quos nihil ducimus libero ipsam.
+                        Disfruta de las mejores hamburguesas artesanales, preparadas al momento con
+                        ingredientes frescos y de calidad. Vive una experiencia única en nuestra
+                        hamburguesería, donde el sabor y la atención son nuestra prioridad. ¡Ven y
+                        prueba nuestras especialidades, papas crocantes y combos irresistibles!
                       </p>
                       <div class="btn-box">
-                        <a href="" class="btn1"> Order Now </a>
+                        <a href="" class="btn1"> Ordena Ahora </a>
                       </div>
                     </div>
                   </div>
@@ -109,14 +110,15 @@ onBeforeUnmount(() => {
                 <div class="row">
                   <div class="col-md-7 col-lg-6">
                     <div class="detail-box">
-                      <h1>Fast Food Restaurant</h1>
+                      <h1>¡Sabor Único en Cada Mordida!</h1>
                       <p>
-                        Doloremque, itaque aperiam facilis rerum, commodi, temporibus sapiente ad
-                        mollitia laborum quam quisquam esse error unde. Tempora ex doloremque,
-                        labore, sunt repellat dolore, iste magni quos nihil ducimus libero ipsam.
+                        Descubre nuestras hamburguesas premium, preparadas con carne 100% de res,
+                        pan artesanal y los mejores ingredientes. Sorpréndete con nuestras salsas
+                        caseras y acompaña tu pedido con papas doradas y bebidas refrescantes. ¡Haz
+                        de tu comida un momento especial en nuestra hamburguesería!
                       </p>
                       <div class="btn-box">
-                        <a href="" class="btn1"> Order Now </a>
+                        <a href="" class="btn1"> ¡Haz tu pedido! </a>
                       </div>
                     </div>
                   </div>
@@ -128,14 +130,15 @@ onBeforeUnmount(() => {
                 <div class="row">
                   <div class="col-md-7 col-lg-6">
                     <div class="detail-box">
-                      <h1>Fast Food Restaurant</h1>
+                      <h1>¡Vive la Experiencia Hamburguesera!</h1>
                       <p>
-                        Doloremque, itaque aperiam facilis rerum, commodi, temporibus sapiente ad
-                        mollitia laborum quam quisquam esse error unde. Tempora ex doloremque,
-                        labore, sunt repellat dolore, iste magni quos nihil ducimus libero ipsam.
+                        Prueba nuestras hamburguesas exclusivas, preparadas con ingredientes
+                        frescos, pan suave y carne jugosa. Disfruta de un ambiente acogedor,
+                        atención personalizada y una variedad de opciones para todos los gustos.
+                        ¡Haz tu pedido y déjate sorprender por el verdadero sabor de la hamburguesa!
                       </p>
                       <div class="btn-box">
-                        <a href="" class="btn1"> Order Now </a>
+                        <a href="" class="btn1"> ¡Pide Ahora! </a>
                       </div>
                     </div>
                   </div>
@@ -166,10 +169,10 @@ onBeforeUnmount(() => {
                   <img src="@/assets/images/o1.jpg" alt="" />
                 </div>
                 <div class="detail-box">
-                  <h5>Tasty Thursdays</h5>
-                  <h6><span>20%</span> Off</h6>
+                  <h5>¡Jueves de Sabor!</h5>
+                  <h6><span>20%</span> de Descuento</h6>
                   <a href="">
-                    Order Now
+                    ¡Haz tu pedido!
                     <svg
                       version="1.1"
                       id="Capa_1"
@@ -233,10 +236,10 @@ onBeforeUnmount(() => {
                   <img src="@/assets/images/o2.jpg" alt="" />
                 </div>
                 <div class="detail-box">
-                  <h5>Pizza Days</h5>
-                  <h6><span>15%</span> Off</h6>
+                  <h5>¡Días de Pizza!</h5>
+                  <h6><span>15%</span> de Descuento</h6>
                   <a href="">
-                    Order Now
+                    ¡Haz tu pedido!
                     <svg
                       version="1.1"
                       id="Capa_1"
@@ -306,15 +309,15 @@ onBeforeUnmount(() => {
     <section id="food" class="food_section layout_padding-bottom">
       <div class="container">
         <div class="heading_container heading_center">
-          <h2>Our Menu</h2>
+          <h2>Nuestro Menú</h2>
         </div>
 
         <ul class="filters_menu">
-          <li class="active" data-filter="*">All</li>
-          <li data-filter=".burger">Burger</li>
-          <li data-filter=".pizza">Pizza</li>
-          <li data-filter=".pasta">Pasta</li>
-          <li data-filter=".fries">Fries</li>
+          <li class="active" data-filter="*">Todos</li>
+          <li data-filter=".burger">Hamburguesas</li>
+          <li data-filter=".pizza">Pizzas</li>
+          <li data-filter=".pasta">Pastas</li>
+          <li data-filter=".fries">Papas Fritas</li>
         </ul>
 
         <div class="filters-content">
@@ -326,13 +329,14 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f1.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Delicious Pizza</h5>
+                    <h5>Pizza Artesanal</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Disfruta de nuestra pizza artesanal, horneada al momento con ingredientes
+                      frescos y masa crujiente. ¡El complemento perfecto para tu hamburguesa
+                      favorita!
                     </p>
                     <div class="options">
-                      <h6>$20</h6>
+                      <h6>20 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -400,13 +404,13 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f2.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Delicious Burger</h5>
+                    <h5>Hamburguesa Especial</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Prueba nuestra hamburguesa especial: carne jugosa, pan artesanal, queso
+                      derretido y vegetales frescos. ¡Una explosión de sabor en cada bocado!
                     </p>
                     <div class="options">
-                      <h6>$15</h6>
+                      <h6>15 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -474,13 +478,14 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f3.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Delicious Pizza</h5>
+                    <h5>Pizza Suprema</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Prueba nuestra pizza suprema: salsa especial, abundante queso, pepperoni y
+                      vegetales frescos sobre una masa artesanal. ¡Ideal para compartir junto a tus
+                      hamburguesas!
                     </p>
                     <div class="options">
-                      <h6>$17</h6>
+                      <h6>17 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -548,13 +553,13 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f4.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Delicious Pasta</h5>
+                    <h5>Pasta Casera</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Disfruta de nuestra pasta casera, preparada al dente y acompañada de salsas
+                      artesanales. ¡El complemento perfecto para tu hamburguesa o pizza favorita!
                     </p>
                     <div class="options">
-                      <h6>$18</h6>
+                      <h6>18 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -622,13 +627,14 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f5.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>French Fries</h5>
+                    <h5>Papas Fritas</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Disfruta de nuestras papas fritas crujientes, doradas a la perfección y
+                      servidas calientes. ¡El acompañamiento ideal para tu hamburguesa o pizza
+                      favorita!
                     </p>
                     <div class="options">
-                      <h6>$10</h6>
+                      <h6>10 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -696,13 +702,14 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f6.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Delicious Pizza</h5>
+                    <h5>Pizza Cuatro Quesos</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Deléitate con nuestra pizza cuatro quesos: una mezcla irresistible de quesos
+                      fundidos sobre masa artesanal y salsa especial. ¡Ideal para los amantes del
+                      queso!
                     </p>
                     <div class="options">
-                      <h6>$15</h6>
+                      <h6>15 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -770,13 +777,13 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f7.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Tasty Burger</h5>
+                    <h5>Hamburguesa Sabrosa</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Disfruta de nuestra hamburguesa sabrosa, jugosa y preparada con ingredientes
+                      frescos. ¡El placer en cada bocado!
                     </p>
                     <div class="options">
-                      <h6>$12</h6>
+                      <h6>12 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -844,13 +851,13 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f8.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Tasty Burger</h5>
+                    <h5>Hamburguesa de Pollo</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Prueba nuestra hamburguesa de pollo: pechuga empanizada y crujiente, pan
+                      suave, lechuga fresca, tomate y mayonesa especial.
                     </p>
                     <div class="options">
-                      <h6>$14</h6>
+                      <h6>14 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -918,13 +925,13 @@ onBeforeUnmount(() => {
                     <img src="@/assets/images/f9.png" alt="" />
                   </div>
                   <div class="detail-box">
-                    <h5>Delicious Pasta</h5>
+                    <h5>Pasta Italiana</h5>
                     <p>
-                      Veniam debitis quaerat officiis quasi cupiditate quo, quisquam velit, magnam
-                      voluptatem repellendus sed eaque
+                      Disfruta de nuestra pasta italiana, cocida al dente y acompañada de salsas
+                      artesanales. ¡Perfecta para complementar tu hamburguesa!
                     </p>
                     <div class="options">
-                      <h6>$10</h6>
+                      <h6>10 Bs</h6>
                       <a href="">
                         <svg
                           version="1.1"
@@ -988,7 +995,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="btn-box">
-          <a href=""> View More </a>
+          <a href=""> Ver más </a>
         </div>
       </div>
     </section>
@@ -1008,16 +1015,15 @@ onBeforeUnmount(() => {
           <div class="col-md-6">
             <div class="detail-box">
               <div class="heading_container">
-                <h2>We Are Feane</h2>
+                <h2>Sobre Nuestra Hamburguesería</h2>
               </div>
               <p>
-                There are many variations of passages of Lorem Ipsum available, but the majority
-                have suffered alteration in some form, by injected humour, or randomised words which
-                don't look even slightly believable. If you are going to use a passage of Lorem
-                Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of
-                text. All
+                Somos apasionados por las hamburguesas y la buena comida. En nuestra hamburguesería
+                combinamos ingredientes frescos, recetas originales y un ambiente acogedor para que
+                vivas una experiencia única en cada visita. ¡Ven y descubre por qué somos el lugar
+                favorito de los amantes de las hamburguesas!
               </p>
-              <a href=""> Read More </a>
+              <a href=""> Conoce más </a>
             </div>
           </div>
         </div>
@@ -1030,7 +1036,7 @@ onBeforeUnmount(() => {
     <section id="book" class="book_section layout_padding">
       <div class="container">
         <div class="heading_container">
-          <h2>Book A Table</h2>
+          <h2>Reserva una Mesa</h2>
         </div>
         <div class="row">
           <div class="col-md-6">
@@ -1047,7 +1053,7 @@ onBeforeUnmount(() => {
                 </div>
                 <div>
                   <select class="form-control nice-select wide">
-                    <option value="" disabled selected>How many persons?</option>
+                    <option value="" disabled selected>¿Cuántas personas?</option>
                     <option value="">2</option>
                     <option value="">3</option>
                     <option value="">4</option>
@@ -1058,7 +1064,7 @@ onBeforeUnmount(() => {
                   <input type="date" class="form-control" />
                 </div>
                 <div class="btn_box">
-                  <button>Book Now</button>
+                  <button>Reservar Ahora</button>
                 </div>
               </form>
             </div>
@@ -1078,7 +1084,7 @@ onBeforeUnmount(() => {
     <section class="client_section layout_padding-bottom">
       <div class="container">
         <div class="heading_container heading_center psudo_white_primary mb_45">
-          <h2>What Says Our Customers</h2>
+          <h2>Lo que dicen nuestros clientes</h2>
         </div>
         <div class="carousel-wrap row">
           <div class="owl-carousel client_owl-carousel">
@@ -1086,11 +1092,11 @@ onBeforeUnmount(() => {
               <div class="box">
                 <div class="detail-box">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                    ¡Las mejores hamburguesas que he probado! El ambiente es acogedor y la atención
+                    excelente. Sin duda, volveré con mi familia.
                   </p>
                   <h6>Moana Michell</h6>
-                  <p>magna aliqua</p>
+                  <p>Cliente frecuente</p>
                 </div>
                 <div class="img-box">
                   <img src="@/assets/images/client1.jpg" alt="" class="box-img" />
@@ -1101,11 +1107,11 @@ onBeforeUnmount(() => {
               <div class="box">
                 <div class="detail-box">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                    El mejor lugar para disfrutar hamburguesas deliciosas y un excelente servicio.
+                    ¡Siempre salgo satisfecho y con ganas de volver!
                   </p>
                   <h6>Mike Hamell</h6>
-                  <p>magna aliqua</p>
+                  <p>Cliente feliz</p>
                 </div>
                 <div class="img-box">
                   <img src="@/assets/images/client2.jpg" alt="" class="box-img" />
@@ -1121,4 +1127,17 @@ onBeforeUnmount(() => {
   </div>
 </template>
 
-<style></style>
+<style>
+/* App.vue o cada vista principal */
+.main-content,
+.hero_area,
+.header-section,
+.header-content,
+.content-card,
+.ventas-container,
+.productos-container,
+.clientes-container,
+.proveedor-container {
+  padding-top: 90px; /* Ajusta según la altura real de tu header */
+}
+</style>

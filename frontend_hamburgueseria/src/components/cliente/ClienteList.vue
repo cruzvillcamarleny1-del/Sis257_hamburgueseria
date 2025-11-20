@@ -3,6 +3,8 @@ import type { Cliente } from '@/models/cliente'
 import http from '@/plugins/axios'
 import { Button, Dialog, InputGroup, InputGroupAddon, InputText } from 'primevue'
 import { computed, onMounted, ref } from 'vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 const ENDPOINT = 'clientes'
 const clientes = ref<Cliente[]>([])
@@ -64,47 +66,82 @@ defineExpose({ obtenerLista })
 
     <!-- Tabla de clientes -->
     <div class="table-container">
-      <table class="clientes-table">
-        <thead>
+      <DataTable
+        :value="clientesFiltrados"
+        class="clientes-table"
+        paginator
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20]"
+        stripedRows
+        responsiveLayout="scroll"
+      >
+        <Column>
+          <template #header>
+            <span class="th-numero">Nro.</span>
+          </template>
+          <template #body="slotProps">
+            <span class="numero-cell">{{ slotProps.index + 1 }}</span>
+          </template>
+        </Column>
+        <Column field="nombre" sortable>
+          <template #header>
+            <span class="th-nombre">Nombre</span>
+          </template>
+          <template #body="slotProps">
+            <span class="nombre-cell">{{ slotProps.data.nombre }}</span>
+          </template>
+        </Column>
+        <Column field="apellido" sortable>
+          <template #header>
+            <span class="th-apellido">Apellido</span>
+          </template>
+          <template #body="slotProps">
+            <span class="apellido-cell">{{ slotProps.data.apellido }}</span>
+          </template>
+        </Column>
+        <Column field="telefono" sortable>
+          <template #header>
+            <span class="th-telefono">Teléfono</span>
+          </template>
+          <template #body="slotProps">
+            <span class="telefono-cell">{{ slotProps.data.telefono }}</span>
+          </template>
+        </Column>
+        <Column field="direccion" sortable>
+          <template #header>
+            <span class="th-direccion">Dirección</span>
+          </template>
+          <template #body="slotProps">
+            <span class="direccion-cell">{{ slotProps.data.direccion }}</span>
+          </template>
+        </Column>
+        <Column>
+          <template #header>
+            <span class="th-acciones">Acciones</span>
+          </template>
+          <template #body="slotProps">
+            <div class="action-buttons">
+              <Button
+                icon="pi pi-pencil"
+                aria-label="Editar"
+                class="edit-button"
+                size="small"
+                @click="emitirEdicion(slotProps.data)"
+                rounded
+              />
+              <Button
+                icon="pi pi-trash"
+                aria-label="Eliminar"
+                class="delete-button"
+                size="small"
+                @click="mostrarEliminarConfirm(slotProps.data)"
+                rounded
+              />
+            </div>
+          </template>
+        </Column>
+        <template #empty>
           <tr>
-            <th>Nro.</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(cliente, index) in clientesFiltrados" :key="cliente.id" class="table-row">
-            <td class="numero-cell">{{ index + 1 }}</td>
-            <td class="nombre-cell">{{ cliente.nombre }}</td>
-            <td class="apellido-cell">{{ cliente.apellido }}</td>
-            <td class="telefono-cell">{{ cliente.telefono }}</td>
-            <td class="direccion-cell">{{ cliente.direccion }}</td>
-            <td class="acciones-cell">
-              <div class="action-buttons">
-                <Button
-                  icon="pi pi-pencil"
-                  aria-label="Editar"
-                  text
-                  class="edit-button"
-                  size="small"
-                  @click="emitirEdicion(cliente)"
-                />
-                <Button
-                  icon="pi pi-trash"
-                  aria-label="Eliminar"
-                  text
-                  severity="danger"
-                  class="delete-button"
-                  size="small"
-                  @click="mostrarEliminarConfirm(cliente)"
-                />
-              </div>
-            </td>
-          </tr>
-          <tr v-if="clientesFiltrados.length === 0" class="no-results-row">
             <td colspan="6" class="no-results-cell">
               <div class="no-results-content">
                 <i class="pi pi-search no-results-icon"></i>
@@ -113,8 +150,8 @@ defineExpose({ obtenerLista })
               </div>
             </td>
           </tr>
-        </tbody>
-      </table>
+        </template>
+      </DataTable>
     </div>
 
     <!-- Dialog de confirmación -->
@@ -464,5 +501,47 @@ defineExpose({ obtenerLista })
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+:deep(.p-datatable-thead > tr > th) {
+  background: linear-gradient(120deg, #23272f 60%, #393e46 100%);
+  color: #fff;
+  border: none;
+  border-bottom: 4px solid #ffd700;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 1.1rem 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1px 0 #ffd700;
+  box-shadow: 0 4px 18px 0 rgba(255, 215, 0, 0.09), 0 2px 8px rgba(0,0,0,0.10);
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+:deep(.p-datatable-thead > tr > th:not(:last-child)) {
+  border-right: 1.5px solid rgba(237, 201, 1, 0.18);
+}
+:deep(.p-datatable-thead > tr > th:hover) {
+  box-shadow: 0 6px 24px 0 rgba(255, 215, 0, 0.18), 0 2px 8px rgba(246, 4, 4, 0.13);
+  background: linear-gradient(120deg, rgb(255, 238, 0) 60%, #ffd700 100%);
+  color: #23272f;
+}
+.th-numero,
+.th-nombre,
+.th-apellido,
+.th-telefono,
+.th-direccion,
+.th-acciones {
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  color: inherit;
+  padding: 0;
+  background: none;
+  border-radius: 0;
 }
 </style>

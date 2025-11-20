@@ -3,6 +3,8 @@ import type { Producto } from '@/models/producto'
 import http from '@/plugins/axios'
 import { computed, onMounted, ref } from 'vue'
 import { Button, Dialog, InputGroup, InputGroupAddon, InputText } from 'primevue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 const ENDPOINT = 'productos'
 const productos = ref<Producto[]>([])
@@ -10,6 +12,19 @@ const productoDelete = ref<Producto | null>(null)
 const mostrarConfirmDialog = ref(false)
 const emit = defineEmits(['edit'])
 const busqueda = ref<string>('')
+
+const paginaActual = ref(1)
+const filasPorPagina = ref(10)
+
+const totalPaginas = computed(() =>
+  Math.ceil(productosFiltrados.value.length / filasPorPagina.value),
+)
+
+const productosPaginados = computed(() => {
+  const inicio = (paginaActual.value - 1) * filasPorPagina.value
+  const fin = inicio + filasPorPagina.value
+  return productosFiltrados.value.slice(inicio, fin)
+})
 
 async function obtenerLista() {
   productos.value = await http.get(ENDPOINT).then((res) => res.data)
@@ -63,87 +78,112 @@ defineExpose({ obtenerLista })
     </div>
 
     <!-- Tabla de productos con diseño moderno -->
+    <!-- Reemplaza el bloque de la tabla por esto -->
     <div class="table-container">
-      <div class="table-wrapper">
-        <table class="productos-table">
-          <thead class="table-header">
-            <tr>
-              <th class="th-numero">Nro.</th>
-              <th class="th-imagen">Imagen</th>
-              <th class="th-nombre">Nombre</th>
-              <th class="th-descripcion">Descripción</th>
-              <th class="th-precio">Precio</th>
-              <th class="th-stock">Stock</th>
-              <th class="th-acciones">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="table-body">
-            <tr
-              v-for="(producto, index) in productosFiltrados"
-              :key="producto.id"
-              class="producto-row"
-            >
-              <td class="td-numero">
-                <span class="numero-badge">{{ index + 1 }}</span>
-              </td>
-              <td class="td-imagen">
-                <div class="imagen-container">
-                  <img
-                    v-if="producto.imagen"
-                    :src="producto.imagen"
-                    alt="Producto"
-                    class="producto-imagen"
-                  />
-                  <div v-else class="no-imagen">
-                    <i class="pi pi-image"></i>
-                  </div>
-                </div>
-              </td>
-              <td class="td-nombre">
-                <span class="producto-nombre">{{ producto.nombre }}</span>
-              </td>
-              <td class="td-descripcion">
-                <span class="producto-descripcion">{{ producto.descripcion }}</span>
-              </td>
-              <td class="td-precio">
-                <span class="precio-badge">Bs {{ producto.precio }}</span>
-              </td>
-              <td class="td-stock">
-                <span class="stock-badge" :class="{ 'stock-bajo': producto.stock < 10 }">
-                  {{ producto.stock }}
-                </span>
-              </td>
-              <td class="td-acciones">
-                <div class="acciones-container">
-                  <Button
-                    icon="pi pi-pencil"
-                    @click="emitirEdicion(producto)"
-                    class="btn-editar"
-                    size="small"
-                    rounded
-                  />
-                  <Button
-                    icon="pi pi-trash"
-                    @click="confirmarEliminar(producto)"
-                    class="btn-eliminar"
-                    size="small"
-                    rounded
-                  />
-                </div>
-              </td>
-            </tr>
-            <tr v-if="productosFiltrados.length === 0">
-              <td colspan="7" class="no-resultados">
-                <div class="no-resultados-content">
-                  <i class="pi pi-search no-resultados-icon"></i>
-                  <p>No se encontraron productos</p>
-                  <small>Intenta con otro término de búsqueda</small>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        :value="productosFiltrados"
+        class="productos-table"
+        paginator
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20]"
+        stripedRows
+        responsiveLayout="scroll"
+      >
+        <Column>
+          <template #header>
+            <span class="th-numero">Nro.</span>
+          </template>
+          <template #body="slotProps">
+            <span class="numero-badge">{{ slotProps.index + 1 }}</span>
+          </template>
+        </Column>
+        <Column>
+          <template #header>
+            <span class="th-imagen">Imagen</span>
+          </template>
+          <template #body="slotProps">
+            <div class="imagen-container">
+              <img
+                v-if="slotProps.data.imagen"
+                :src="slotProps.data.imagen"
+                alt="Producto"
+                class="producto-imagen"
+              />
+              <div v-else class="no-imagen">
+                <i class="pi pi-image"></i>
+              </div>
+            </div>
+          </template>
+        </Column>
+        <Column field="nombre" sortable>
+          <template #header>
+            <span class="th-nombre">Nombre</span>
+          </template>
+          <template #body="slotProps">
+            <span class="producto-nombre">{{ slotProps.data.nombre }}</span>
+          </template>
+        </Column>
+        <Column field="descripcion" sortable>
+          <template #header>
+            <span class="th-descripcion">Descripción</span>
+          </template>
+          <template #body="slotProps">
+            <span class="producto-descripcion">{{ slotProps.data.descripcion }}</span>
+          </template>
+        </Column>
+        <Column field="precio" sortable>
+          <template #header>
+            <span class="th-precio">Precio</span>
+          </template>
+          <template #body="slotProps">
+            <span class="precio-badge">Bs {{ slotProps.data.precio }}</span>
+          </template>
+        </Column>
+        <Column field="stock" sortable>
+          <template #header>
+            <span class="th-stock">Stock</span>
+          </template>
+          <template #body="slotProps">
+            <span class="stock-badge" :class="{ 'stock-bajo': slotProps.data.stock < 10 }">
+              {{ slotProps.data.stock }}
+            </span>
+          </template>
+        </Column>
+        <Column>
+          <template #header>
+            <span class="th-acciones">Acciones</span>
+          </template>
+          <template #body="slotProps">
+            <div class="acciones-container">
+              <Button
+                icon="pi pi-pencil"
+                @click="emitirEdicion(slotProps.data)"
+                class="btn-editar"
+                size="small"
+                rounded
+              />
+              <Button
+                icon="pi pi-trash"
+                @click="confirmarEliminar(slotProps.data)"
+                class="btn-eliminar"
+                size="small"
+                rounded
+              />
+            </div>
+          </template>
+        </Column>
+        <template #empty>
+          <tr>
+            <td colspan="7" class="no-resultados">
+              <div class="no-resultados-content">
+                <i class="pi pi-search no-resultados-icon"></i>
+                <p>No se encontraron productos</p>
+                <small>Intenta con otro término de búsqueda</small>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </DataTable>
     </div>
 
     <!-- Dialog de confirmación estilizado -->
@@ -642,5 +682,57 @@ defineExpose({ obtenerLista })
     width: 100% !important;
     justify-content: center !important;
   }
+}
+
+:deep(.p-datatable-thead > tr > th) {
+  background: linear-gradient(120deg, #23272f 60%, #393e46 100%);
+  color: #fff;
+  border: none;
+  border-bottom: 4px solid #ffd700;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 1.1rem 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.18),
+    0 1px 0 #ffd700;
+  box-shadow:
+    0 4px 18px 0 rgba(255, 215, 0, 0.09),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+
+:deep(.p-datatable-thead > tr > th:not(:last-child)) {
+  border-right: 1.5px solid rgba(237, 201, 1, 0.18);
+}
+
+:deep(.p-datatable-thead > tr > th:hover) {
+  box-shadow:
+    0 6px 24px 0 rgba(255, 215, 0, 0.18),
+    0 2px 8px rgba(246, 4, 4, 0.13);
+  background: linear-gradient(120deg, rgb(255, 238, 0) 60%, #ffd700 100%);
+  color: #23272f;
+}
+
+.th-numero,
+.th-imagen,
+.th-nombre,
+.th-descripcion,
+.th-precio,
+.th-stock,
+.th-acciones {
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  color: inherit;
+  padding: 0;
+  background: none;
+  border-radius: 0;
 }
 </style>

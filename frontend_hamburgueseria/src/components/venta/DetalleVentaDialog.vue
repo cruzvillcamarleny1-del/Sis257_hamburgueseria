@@ -3,6 +3,38 @@ import { defineProps, computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 
+const dtf = new Intl.DateTimeFormat('es-BO', {
+  dateStyle: 'short',
+  timeStyle: 'medium',
+  hour12: false,
+  timeZone: 'America/La_Paz',
+})
+
+function parseFecha(value: any): Date | null {
+  if (!value) return null
+  if (value instanceof Date) return value
+
+  // "HH:mm:ss"
+  if (typeof value === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(value)) {
+    const d = new Date()
+    const [h, m, s] = value.split(':').map(Number)
+    d.setHours(h, m, s, 0)
+    return d
+  }
+
+  // "YYYY-MM-DD"
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return new Date(value + 'T00:00:00')
+  }
+
+  return new Date(value)
+}
+
+function formatFechaHora(value: unknown) {
+  const d = parseFecha(value)
+  return d && !isNaN(d.getTime()) ? dtf.format(d) : '—'
+}
+
 const props = defineProps<{
   mostrar: boolean
   venta: any
@@ -45,7 +77,7 @@ const total = computed(() =>
           </div>
           <div class="info-item">
             <label class="info-label"> <i class="pi pi-calendar info-icon"></i> Fecha: </label>
-            <span class="info-value">{{ venta.fecha }}</span>
+            <span class="info-value">{{ formatFechaHora(venta.fecha) }}</span>
           </div>
         </div>
 
@@ -54,6 +86,7 @@ const total = computed(() =>
           <table class="detalle-table">
             <thead>
               <tr>
+                <th>Img</th>
                 <th>Producto</th>
                 <th>Cantidad</th>
                 <th>Precio Unitario</th>
@@ -62,6 +95,15 @@ const total = computed(() =>
             </thead>
             <tbody>
               <tr v-for="(item, idx) in venta.detalleVenta" :key="idx">
+                <td>
+                  <img
+                    v-if="item.producto?.imagen"
+                    :src="item.producto.imagen"
+                    alt="Imagen producto"
+                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px"
+                  />
+                  <span v-else style="color: #aaa">Sin imagen</span>
+                </td>
                 <td>{{ item.producto?.nombre || 'N/A' }}</td>
                 <td>{{ item.cantidad }}</td>
                 <td>Bs {{ item.precioUnitario }}</td>
@@ -110,8 +152,12 @@ const total = computed(() =>
 }
 
 .dialog-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra horizontalmente */
+  justify-content: center;
   text-align: center;
-  margin-bottom: 1rem;
+  width: 100%;
 }
 
 .header-icon {
@@ -149,7 +195,7 @@ const total = computed(() =>
 
 .info-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Antes: center */
   gap: 0.5rem;
 }
 
@@ -158,8 +204,9 @@ const total = computed(() =>
   color: #ffffff;
   font-size: 1rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Antes: center */
   gap: 0.5rem;
+  min-width: 120px; /* Opcional: ancho fijo para alinear valores */
 }
 
 .info-icon {
@@ -171,6 +218,7 @@ const total = computed(() =>
   font-size: 1rem;
   color: #ffffff;
   font-weight: 500;
+  margin-top: 0.1rem; /* Opcional: pequeño ajuste vertical */
 }
 
 /* Tabla de detalles */
