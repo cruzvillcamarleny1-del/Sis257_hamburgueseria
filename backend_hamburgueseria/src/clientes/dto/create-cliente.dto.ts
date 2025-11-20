@@ -1,7 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateClienteDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ message: 'El campo ci debe ser de tipo cadena' })
+  @MaxLength(20, { message: 'El campo ci no debe ser mayor a 20 caracteres' })
+  readonly ci?: string;
+
   @ApiProperty()
   @IsNotEmpty({ message: 'El campo nombre no debe ser vacío' })
   @IsString({ message: 'El campo nombre debe ser de tipo cadena' })

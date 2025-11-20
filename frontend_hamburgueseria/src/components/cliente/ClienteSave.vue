@@ -35,6 +35,7 @@ watch(
 async function handleSave() {
   try {
     const body = {
+      ci: cliente.value.ci,
       nombre: cliente.value.nombre,
       apellido: cliente.value.apellido,
       telefono: cliente.value.telefono,
@@ -76,6 +77,26 @@ async function handleSave() {
       </template>
 
       <div class="dialog-content">
+        <!-- Campo CI -->
+        <div class="field-container">
+          <label for="ci" class="field-label">
+            <i class="pi pi-id-card field-icon"></i>
+            CI
+          </label>
+          <div class="input-wrapper">
+            <input
+              id="ci"
+              v-model="cliente.ci"
+              class="styled-input"
+              placeholder="Ingresa el CI..."
+              autocomplete="off"
+              autofocus
+              type="text"
+              maxlength="20"
+              @input="(e) => (cliente.ci = e.target.value.replace(/[^0-9]/g, ''))"
+            />
+          </div>
+        </div>
         <!-- Campo Nombre -->
         <div class="field-container">
           <label for="nombre" class="field-label">

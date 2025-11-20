@@ -69,7 +69,12 @@ const total = computed(() =>
         <div class="info-section">
           <div class="info-item">
             <label class="info-label"> <i class="pi pi-user info-icon"></i> Cliente: </label>
-            <span class="info-value">{{ venta.cliente?.nombre || 'Sin cliente' }}</span>
+            <span class="info-value">
+              {{ venta.cliente?.nombre || '' }}
+              {{ venta.cliente?.apellido || '' }}
+              <template v-if="venta.cliente?.ci">({{ venta.cliente.ci }})</template>
+              <template v-else>(Sin CI)</template>
+            </span>
           </div>
           <div class="info-item">
             <label class="info-label"> <i class="pi pi-user-edit info-icon"></i> Vendedor: </label>

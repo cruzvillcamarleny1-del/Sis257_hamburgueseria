@@ -8,6 +8,29 @@ import http from '@/plugins/axios'
 import type { Producto } from '@/models/producto'
 import type { Cliente } from '@/models/cliente'
 import type { Usuario } from '@/models/usuario'
+import { reactive } from 'vue'
+
+const mostrarSubformCliente = ref(false)
+const nuevoCliente = reactive<{
+  ci: string
+  nombre: string
+  apellido: string
+  telefono: string
+  direccion: string
+}>({
+  ci: '',
+  nombre: '',
+  apellido: '',
+  telefono: '',
+  direccion: '',
+})
+
+const clientesDropdown = computed(() =>
+  clientes.value.map((c) => ({
+    ...c,
+    label: `${c.nombre} ${c.apellido} (${c.ci || 'Sin CI'})`,
+  })),
+)
 
 const props = defineProps<{ mostrar: boolean }>()
 const emit = defineEmits(['cerrar', 'ventaGuardada'])
@@ -159,6 +182,31 @@ async function registrarVenta() {
     alert(error?.response?.data?.message || 'Ocurrió un error al registrar la venta')
   }
 }
+
+async function guardarNuevoCliente() {
+  if (
+    !nuevoCliente.nombre.trim() ||
+    !nuevoCliente.apellido.trim() ||
+    !String(nuevoCliente.telefono).trim() ||
+    !nuevoCliente.direccion.trim()
+  ) {
+    alert('Debe completar todos los campos')
+    return
+  }
+  try {
+    const res = await http.post('/clientes', { ...nuevoCliente })
+    clientes.value.push(res.data)
+    idCliente.value = res.data.id
+    mostrarSubformCliente.value = false
+    nuevoCliente.ci = ''
+    nuevoCliente.nombre = ''
+    nuevoCliente.apellido = ''
+    nuevoCliente.telefono = ''
+    nuevoCliente.direccion = ''
+  } catch (e: any) {
+    alert(e?.response?.data?.message || 'Error al registrar cliente')
+  }
+}
 </script>
 
 <template>
@@ -203,11 +251,11 @@ async function registrarVenta() {
             <i class="pi pi-users field-icon"></i>
             Cliente
           </label>
-          <div class="input-wrapper">
+          <div class="input-wrapper" style="display: flex; gap: 0.5rem; align-items: center">
             <Dropdown
               v-model="idCliente"
-              :options="clientes"
-              optionLabel="nombre"
+              :options="clientesDropdown"
+              optionLabel="label"
               optionValue="id"
               class="styled-input"
               placeholder="Seleccionar cliente"
@@ -220,7 +268,87 @@ async function registrarVenta() {
                 item: { style: { color: '#eeeeee' } },
               }"
             />
+            <Button
+              icon="pi pi-user-plus"
+              class="btn-agregar-cliente"
+              style="padding: 0.6rem 1rem; border-radius: 12px"
+              @click="mostrarSubformCliente = true"
+              title="Agregar nuevo cliente"
+            />
           </div>
+
+          <Dialog
+            v-model:visible="mostrarSubformCliente"
+            header="Agregar Cliente Rápido"
+            :style="{ width: '22rem' }"
+            modal
+            :closable="false"
+          >
+            <div style="display: flex; flex-direction: column; gap: 1rem">
+              <input
+                v-model="nuevoCliente.ci"
+                type="text"
+                class="styled-input"
+                placeholder="CI"
+                maxlength="20"
+                style="margin-bottom: 0.5rem"
+                @input="
+                  (e) =>
+                    (nuevoCliente.ci = (e.target as HTMLInputElement).value.replace(/[^0-9]/g, ''))
+                "
+              />
+              <input
+                v-model="nuevoCliente.nombre"
+                type="text"
+                class="styled-input"
+                placeholder="Nombre"
+                style="margin-bottom: 0.5rem"
+              />
+              <input
+                v-model="nuevoCliente.apellido"
+                type="text"
+                class="styled-input"
+                placeholder="Apellido"
+                style="margin-bottom: 0.5rem"
+              />
+              <input
+                v-model="nuevoCliente.telefono"
+                type="text"
+                class="styled-input"
+                placeholder="Teléfono"
+                maxlength="10"
+                style="margin-bottom: 0.5rem"
+                @input="
+                  (e) =>
+                    (nuevoCliente.telefono = (e.target as HTMLInputElement).value.replace(
+                      /[^0-9]/g,
+                      '',
+                    ))
+                "
+              />
+              <input
+                v-model="nuevoCliente.direccion"
+                type="text"
+                class="styled-input"
+                placeholder="Dirección"
+                style="margin-bottom: 0.5rem"
+              />
+            </div>
+            <template #footer>
+              <Button
+                label="Cancelar"
+                icon="pi pi-times"
+                class="btn-cancelar"
+                @click="mostrarSubformCliente = false"
+              />
+              <Button
+                label="Guardar"
+                icon="pi pi-save"
+                class="btn-guardar"
+                @click="guardarNuevoCliente"
+              />
+            </template>
+          </Dialog>
         </div>
 
         <div class="field-container">
@@ -860,5 +988,20 @@ async function registrarVenta() {
   font-size: 0.85rem !important;
   border-radius: 8px !important;
   margin-top: 0.3rem;
+}
+
+.btn-agregar-cliente {
+  background: linear-gradient(45deg, #ffbe33, #ffa500) !important;
+  border: none !important;
+  color: #222831 !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  box-shadow: 0 2px 8px rgba(255, 190, 51, 0.18) !important;
+  transition: all 0.2s;
+}
+.btn-agregar-cliente:hover {
+  background: linear-gradient(45deg, #ffa500, #ffbe33) !important;
+  color: #222831 !important;
+  transform: translateY(-2px) !important;
 }
 </style>

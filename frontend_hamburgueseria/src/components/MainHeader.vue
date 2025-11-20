@@ -59,7 +59,9 @@ onBeforeUnmount(() => {
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <router-link class="nav-link" :to="{ path: '/', hash: '#home' }">Inicio</router-link>
+                <router-link class="nav-link" :to="{ path: '/', hash: '#home' }"
+                  >Inicio</router-link
+                >
               </li>
               <li class="nav-item">
                 <router-link class="nav-link" :to="{ path: '/', hash: '#food' }">Menu</router-link>
@@ -86,16 +88,32 @@ onBeforeUnmount(() => {
                   <i class="fa fa-cogs"></i> Gestión <i class="fa fa-caret-down"></i>
                 </a>
                 <div v-show="showGestion" class="gestion-menu animated-dropdown">
-                  <router-link class="gestion-item" :to="{ name: 'producto' }">
+                  <router-link
+                    class="gestion-item"
+                    :to="{ name: 'producto' }"
+                    @click="showGestion = false"
+                  >
                     <i class="fa fa-cutlery"></i> Productos
                   </router-link>
-                  <router-link class="gestion-item" :to="{ name: 'ventas' }">
+                  <router-link
+                    class="gestion-item"
+                    :to="{ name: 'ventas' }"
+                    @click="showGestion = false"
+                  >
                     <i class="fa fa-shopping-cart"></i> Ventas
                   </router-link>
-                  <router-link class="gestion-item" :to="{ name: 'proveedor' }">
+                  <router-link
+                    class="gestion-item"
+                    :to="{ name: 'proveedor' }"
+                    @click="showGestion = false"
+                  >
                     <i class="fa fa-truck"></i> Proveedores
                   </router-link>
-                  <router-link class="gestion-item" :to="{ name: 'cliente' }">
+                  <router-link
+                    class="gestion-item"
+                    :to="{ name: 'cliente' }"
+                    @click="showGestion = false"
+                  >
                     <i class="fa fa-users"></i> Clientes
                   </router-link>
                 </div>
