@@ -1,59 +1,73 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/index'
+import { useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
+import fallbackImage from '@/assets/images/ham.jpg'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Message from 'primevue/message'
 
-const usuario = ref('')
-const clave = ref('')
-const error = ref(false)
-const loading = ref(false)
+const router = useRouter()
+const toast = useToast()
 
-function onSubmit() {
+const usuario = ref<string>('')
+const clave = ref<string>('')
+const error = ref<string>('')
+const loading = ref<boolean>(false)
+
+async function onSubmit() {
+  const trimmedUsuario = usuario.value.trim()
+  const trimmedClave = clave.value.trim()
+
+  if (!trimmedUsuario || !trimmedClave) {
+    error.value = 'Todos los campos son obligatorios'
+    return
+  }
+
   const authStore = useAuthStore()
   loading.value = true
-  error.value = false
-  authStore
-    .login(usuario.value, clave.value)
-    .then(() => {
-      console.log('Token OK:', authStore.token)
-    })
-    .catch((e) => {
-      console.error('Login error:', e)
-      error.value = true
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  error.value = ''
+
+  try {
+    await authStore.register(trimmedUsuario, trimmedClave)
+    console.log('Registro exitoso')
+    // Optionally redirect or show success message
+    router.push('/login')
+  } catch (e: any) {
+    console.error('Registro error:', e)
+    error.value = e.message || 'Error al registrar'
+  } finally {
+    loading.value = false
+  }
 }
 
 function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement
-  target.src = 'data:@/assets/images/bg_1.jpg'
+  target.src = fallbackImage
 }
 </script>
 
 <template>
-  <div class="login-container">
-    <div class="login-background"></div>
-    <div class="login-content">
-      <div class="login-section">
-        <Card class="login-card">
+  <div class="register-container">
+    <div class="register-background"></div>
+    <div class="register-content">
+      <div class="register-section">
+        <Card class="register-card">
           <template #header>
             <div class="burger-header">
               <div class="logo-circle">
-                <i class="pi pi-star"></i>
+                <i class="pi pi-user-plus"></i>
               </div>
-              <h1 class="login-title">Hamburguesería</h1>
-              <h1 class="login-title accent">Las mejores Hamburguesas</h1>
+              <h1 class="register-title">Crear Cuenta</h1>
+              <h1 class="register-title accent">Únete a la Hamburguesería</h1>
             </div>
           </template>
 
           <template #content>
-            <form @submit.prevent="onSubmit" class="login-form">
+            <form @submit.prevent="onSubmit" class="register-form">
               <div class="field">
                 <label for="usuario" class="field-label">
                   <i class="pi pi-user"></i>
@@ -85,23 +99,24 @@ function handleImageError(event: Event) {
                 />
               </div>
 
-              <Message v-if="error" severity="error" class="login-error">
+              <Message v-if="error" severity="error" class="register-error">
                 <i class="pi pi-exclamation-triangle"></i>
-                Credenciales incorrectas
+                {{ error }}
               </Message>
 
               <Button
                 type="submit"
-                class="login-button w-full"
+                class="register-button w-full"
                 :loading="loading"
                 :disabled="!usuario || !clave"
               >
-                <i class="pi pi-sign-in"></i>
-                <span class="ml-2">Ingresar</span>
+                <i class="pi pi-user-plus"></i>
+                <span class="ml-2">Crear Cuenta</span>
               </Button>
+
               <div class="extra-links">
-                <router-link to="/register" class="link-small">
-                  ¿No tienes cuenta? Regístrate
+                <router-link to="/login" class="link-small">
+                  ¿Ya tienes cuenta? Inicia sesión
                 </router-link>
               </div>
             </form>
@@ -113,7 +128,7 @@ function handleImageError(event: Event) {
         <div class="image-decoration"></div>
         <div class="image-container">
           <img
-            src="@/assets/images/ham2.jpg"
+            src="@/assets/images/ham.jpg"
             alt="Deliciosa hamburguesa"
             class="hero-image"
             @error="handleImageError"
@@ -128,8 +143,8 @@ function handleImageError(event: Event) {
             <i class="pi pi-star"></i>
           </div>
           <div class="hero-overlay-text">
-            <h2 class="image-title">Burgers Premium</h2>
-            <p class="image-subtitle">Pan artesanal, carne 100% y salsa secreta</p>
+            <h2 class="image-title">Bienvenido</h2>
+            <p class="image-subtitle">Regístrate y disfruta de nuestras deliciosas hamburguesas</p>
           </div>
         </div>
       </div>
@@ -140,7 +155,7 @@ function handleImageError(event: Event) {
 <style scoped>
 /* Paleta: Fondo #1d1f21, Gris #2a2e32, Mostaza #ffbe33, Ketchup #d72323, Verde #3fa34d, Crema #fff6d9 */
 
-.login-container {
+.register-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -154,7 +169,7 @@ function handleImageError(event: Event) {
   position: relative;
 }
 
-.login-background {
+.register-background {
   position: absolute;
   inset: 0;
   background:
@@ -163,7 +178,7 @@ function handleImageError(event: Event) {
   pointer-events: none;
 }
 
-.login-content {
+.register-content {
   display: flex;
   width: 100%;
   max-width: 1400px;
@@ -180,7 +195,7 @@ function handleImageError(event: Event) {
 }
 
 /* Sección izquierda */
-.login-section {
+.register-section {
   flex: 1;
   display: flex;
   align-items: center;
@@ -188,7 +203,7 @@ function handleImageError(event: Event) {
   padding: clamp(1.5rem, 3vw, 3rem);
 }
 
-.login-card {
+.register-card {
   width: 100%;
   max-width: 480px;
   background: linear-gradient(165deg, #25282b 0%, #1d1f21 90%);
@@ -238,7 +253,7 @@ function handleImageError(event: Event) {
   position: relative;
 }
 
-.login-title {
+.register-title {
   margin: 0;
   font-size: clamp(1.9rem, 4vw, 2.4rem);
   font-weight: 800;
@@ -249,7 +264,7 @@ function handleImageError(event: Event) {
   text-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
 
-.login-title.accent {
+.register-title.accent {
   font-size: clamp(1.4rem, 3vw, 1.8rem);
   margin-top: 0.25rem;
   background: linear-gradient(90deg, #ffbe33, #d72323);
@@ -257,17 +272,8 @@ function handleImageError(event: Event) {
   color: transparent;
 }
 
-.login-subtitle {
-  margin: 0.9rem 0 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #ffd666;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
 /* Formulario */
-.login-form {
+.register-form {
   padding: 1.5rem 1.7rem 2.2rem;
   display: flex;
   flex-direction: column;
@@ -320,14 +326,14 @@ function handleImageError(event: Event) {
   background: linear-gradient(145deg, #2f3337, #2a2e32);
 }
 
-:deep(.styled-input::placeholder),
-:deep(.p-password .p-inputtext::placeholder) {
+:deep(.styled-input::placeholder) {
   color: rgba(255, 246, 217, 0.5);
   font-style: italic;
 }
 
+
 /* Botón */
-.login-button {
+.register-button {
   background: linear-gradient(135deg, #ffbe33 0%, #ffb400 35%, #d72323 100%);
   color: #1d1f21;
   font-weight: 700;
@@ -348,7 +354,7 @@ function handleImageError(event: Event) {
   transition: all 0.35s cubic-bezier(0.4, 0.2, 0.2, 1);
 }
 
-:deep(.login-button:hover:not(:disabled)) {
+:deep(.register-button:hover:not(:disabled)) {
   transform: translateY(-3px);
   box-shadow:
     0 16px 40px -8px rgba(215, 35, 35, 0.55),
@@ -356,11 +362,11 @@ function handleImageError(event: Event) {
   filter: brightness(1.08);
 }
 
-:deep(.login-button:active:not(:disabled)) {
+:deep(.register-button:active:not(:disabled)) {
   transform: translateY(-1px);
 }
 
-:deep(.login-button:disabled) {
+:deep(.register-button:disabled) {
   background: linear-gradient(135deg, #555, #333);
   color: #999;
   box-shadow: none;
@@ -386,7 +392,7 @@ function handleImageError(event: Event) {
 }
 
 /* Mensaje error */
-.login-error {
+.register-error {
   background: rgba(215, 35, 35, 0.08);
   border: 1px solid rgba(215, 35, 35, 0.35);
   color: #ff9e9e;
@@ -396,36 +402,10 @@ function handleImageError(event: Event) {
   box-shadow: 0 6px 18px -6px rgba(215, 35, 35, 0.4);
 }
 
-:deep(.login-error .p-message-text) {
+:deep(.register-error .p-message-text) {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-}
-
-/* Footer */
-.login-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 0.9rem 1rem 1.1rem;
-  font-size: 0.75rem;
-  color: #c7c7c7;
-  background: linear-gradient(135deg, #232629, #1d1f21);
-  border-top: 1px solid rgba(255, 190, 51, 0.18);
-}
-
-.footer-badge {
-  width: 30px;
-  height: 30px;
-  background: linear-gradient(145deg, #ffbe33, #ffd666);
-  color: #1d1f21;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  box-shadow: 0 6px 18px -4px rgba(255, 190, 51, 0.55);
 }
 
 /* Sección derecha */
@@ -565,7 +545,7 @@ function handleImageError(event: Event) {
   }
 }
 
-.login-card {
+.register-card {
   animation: fadeUp 0.6s ease-out;
 }
 .image-section {
@@ -574,14 +554,14 @@ function handleImageError(event: Event) {
 
 /* Responsive */
 @media (max-width: 1100px) {
-  .login-content {
+  .register-content {
     flex-direction: column;
     min-height: auto;
   }
   .image-section {
     min-height: 360px;
   }
-  .login-section {
+  .register-section {
     padding: 2rem 1.25rem;
   }
   .hero-overlay-text {
@@ -595,10 +575,10 @@ function handleImageError(event: Event) {
     height: 60px;
     font-size: 1.3rem;
   }
-  .login-title {
+  .register-title {
     font-size: 2rem;
   }
-  .login-card {
+  .register-card {
     max-width: 100%;
   }
   .image-title {
@@ -607,19 +587,19 @@ function handleImageError(event: Event) {
   .image-subtitle {
     font-size: 0.9rem;
   }
-  .login-form {
+  .register-form {
     padding: 1.2rem 1.2rem 1.6rem;
   }
 }
 
 @media (max-width: 460px) {
-  .login-content {
+  .register-content {
     border-radius: 20px;
   }
   .burger-header {
     padding: 1.7rem 1rem 1.4rem;
   }
-  .login-form {
+  .register-form {
     gap: 1rem;
   }
   .floating-item {

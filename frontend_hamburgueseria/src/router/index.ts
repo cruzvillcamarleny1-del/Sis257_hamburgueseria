@@ -21,13 +21,13 @@ const router = createRouter({
       component: () => import('../views/VentaView.vue'),
     },
     {
-      path: '/producto',
-      name: 'producto',
+      path: '/productos',
+      name: 'productos',
       component: () => import('../views/ProductoView.vue'),
     },
     {
-      path: '/cliente',
-      name: 'cliente',
+      path: '/clientes',
+      name: 'clientes',
       component: () => import('../views/ClienteView.vue'),
     },
     {
@@ -36,9 +36,19 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue'),
     },
     {
-      path: '/proveedor',
-      name: 'proveedor',
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+    },
+    {
+      path: '/proveedores',
+      name: 'proveedores',
       component: () => import('../views/ProveedorView.vue'),
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('../views/CartView.vue'),
     },
   ],
   scrollBehavior(to) {
@@ -52,7 +62,7 @@ const router = createRouter({
 // Guard para rutas privadas
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const publicPages = ['/', '/login', '/about']
+  const publicPages = ['/login', '/register']
   const authRequired = !publicPages.includes(to.path)
   if (authRequired && !authStore.token) {
     return next('/login')

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ProductoList from '@/components/producto/ProductoList.vue'
 import ProductoSave from '@/components/producto/ProductoSave.vue'
-import { Button } from 'primevue'
+import Button from 'primevue/button'
 import { ref } from 'vue'
 
 const mostrarDialog = ref(false)

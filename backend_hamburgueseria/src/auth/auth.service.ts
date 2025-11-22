@@ -3,6 +3,7 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UsuariosService } from 'src/usuarios/usuarios.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto } from './dto/auth-login.dto';
+import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 @Injectable()
@@ -23,6 +24,10 @@ export class AuthService {
       access_token,
       usuario: usuarioOk,
     };
+  }
+
+  async register(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    return this.usuarioService.create(createUsuarioDto);
   }
 
   async getAccessToken(payload: JwtPayload) {

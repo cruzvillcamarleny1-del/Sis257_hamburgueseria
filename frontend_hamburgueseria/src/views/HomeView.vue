@@ -1,36 +1,18 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount } from 'vue'
+import { useProductsStore } from '@/stores/products'
+import { useCartStore } from '@/stores'
+import { formatBs } from '@/helpers/currency'
 
-let isotopeInstance: any = null
 let owlInited = false
 
-// Isotope (filtros menú)
+const products = useProductsStore()
+const cart = useCartStore()
+
 onMounted(() => {
-  const w = window as any
-  const $ = w.jQuery || w.$
-  if (!$ || !w.Isotope) {
-    console.warn('Isotope no disponible')
-    return
-  }
-
-  const $grid = $('.grid')
-  if (!$grid.length) {
-    console.warn('No se encontró .grid')
-    return
-  }
-
-  isotopeInstance = new w.Isotope($grid[0], {
-    itemSelector: '.all',
-    layoutMode: 'fitRows',
-  })
-
-  $('.filters_menu li').on('click.menuFilter', function () {
-    const filterValue = $(this).attr('data-filter')
-    isotopeInstance.arrange({ filter: filterValue })
-    $('.filters_menu li').removeClass('active')
-    $(this).addClass('active')
-  })
+  products.fetchAll()
 })
+
 
 // OwlCarousel + Nice Select
 onMounted(() => {
@@ -62,15 +44,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   const $ = (window as any).jQuery || (window as any).$
   if ($) {
-    $('.filters_menu li').off('click.menuFilter')
     if (owlInited) {
       $('.client_owl-carousel').trigger('destroy.owl.carousel')
       owlInited = false
     }
-  }
-  if (isotopeInstance) {
-    isotopeInstance.destroy()
-    isotopeInstance = null
   }
 })
 </script>
@@ -312,15 +289,55 @@ onBeforeUnmount(() => {
           <h2>Nuestro Menú</h2>
         </div>
 
-        <ul class="filters_menu">
-          <li class="active" data-filter="*">Todos</li>
-          <li data-filter=".burger">Hamburguesas</li>
-          <li data-filter=".pizza">Pizzas</li>
-          <li data-filter=".pasta">Pastas</li>
-          <li data-filter=".fries">Papas Fritas</li>
-        </ul>
+        <!-- Catálogo dinámico -->
+        <div class="dynamic-products">
+          <div class="row grid">
+            <template v-if="products.loading">
+              <div class="col-sm-6 col-lg-4" v-for="n in 6" :key="'sk-'+n">
+                <div class="box skeleton">
+                  <div class="img-box skeleton-box"></div>
+                  <div class="detail-box">
+                    <div class="skeleton-line w-70"></div>
+                    <div class="skeleton-line w-90"></div>
+                    <div class="skeleton-line w-50"></div>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <template v-else-if="products.items.length === 0">
+              <div class="col-12">
+                <div class="empty-state">
+                  <i class="pi pi-info-circle"></i>
+                  <p>No hay productos disponibles.</p>
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="col-sm-6 col-lg-4 all" v-for="p in products.items" :key="p.id">
+                <div class="box">
+                  <div>
+                    <div class="img-box">
+                      <img :src="p.imagen || '/placeholder.png'" :alt="p.nombre" />
+                    </div>
+                    <div class="detail-box">
+                      <h5>{{ p.nombre }}</h5>
+                      <p>{{ p.descripcion }}</p>
+                      <div class="options">
+                        <h6>{{ formatBs(p.precio) }}</h6>
+                        <button class="add-btn" :disabled="(p.stock ?? 0) <= 0" @click="cart.addToCart(p)">
+                          <i class="pi pi-shopping-cart"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
 
-        <div class="filters-content">
+        
+        <div class="filters-content" style="display: none;">
           <div class="row grid">
             <div class="col-sm-6 col-lg-4 all pizza">
               <div class="box">
@@ -995,7 +1012,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="btn-box">
-          <a href=""> Ver más </a>
+          <a href="/productos"> Ver más </a>
         </div>
       </div>
     </section>
@@ -1140,4 +1157,16 @@ onBeforeUnmount(() => {
 .proveedor-container {
   padding-top: 90px; /* Ajusta según la altura real de tu header */
 }
+</style>
+
+<style scoped>
+.skeleton { padding: 1rem; }
+.skeleton-box { height: 180px; background: #eee; border-radius: 12px; }
+.skeleton-line { height: 14px; background: #e6e6e6; border-radius: 8px; margin: 10px 0; }
+.w-70 { width: 70%; }
+.w-90 { width: 90%; }
+.w-50 { width: 50%; }
+.empty-state { text-align: center; color: #aaa; padding: 2rem 0; }
+.add-btn { background: #ffbe33; border: none; color: #222831; padding: 0.5rem 0.7rem; border-radius: 8px; cursor: pointer; }
+.add-btn:disabled { background: #ccc; cursor: not-allowed; }
 </style>

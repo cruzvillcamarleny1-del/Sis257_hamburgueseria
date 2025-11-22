@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ClienteList from '@/components/cliente/ClienteList.vue'
 import ClienteSave from '@/components/cliente/ClienteSave.vue'
-import { Button } from 'primevue'
+import Button from 'primevue/button'
 import { ref } from 'vue'
 
 const mostrarDialog = ref(false)

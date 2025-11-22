@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import Dialog from 'primevue/dialog'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
@@ -52,6 +53,12 @@ const idUsuario = ref<number>()
 const idCliente = ref<number>()
 const productoSeleccionado = ref<Producto | null>(null)
 const cantidad = ref(1)
+
+const router = useRouter()
+
+function irAClientes() {
+  router.push('/clientes')
+}
 
 function getUserIdFromToken(): number | undefined {
   const raw = localStorage.getItem('token') || localStorage.getItem('access_token')
@@ -251,7 +258,11 @@ async function guardarNuevoCliente() {
             <i class="pi pi-users field-icon"></i>
             Cliente
           </label>
+<<<<<<< HEAD
           <div class="input-wrapper" style="display: flex; gap: 0.5rem; align-items: center">
+=======
+          <div class="input-wrapper-con-boton">
+>>>>>>> 982331e (Agregué la funcionalidad para crear nuevos registros, se arreglo el menu para que carge desde la base de datos)
             <Dropdown
               v-model="idCliente"
               :options="clientesDropdown"
@@ -269,11 +280,18 @@ async function guardarNuevoCliente() {
               }"
             />
             <Button
+<<<<<<< HEAD
               icon="pi pi-user-plus"
               class="btn-agregar-cliente"
               style="padding: 0.6rem 1rem; border-radius: 12px"
               @click="mostrarSubformCliente = true"
               title="Agregar nuevo cliente"
+=======
+              icon="pi pi-plus"
+              class="p-button-secondary"
+              @click="irAClientes"
+              v-tooltip.top="'Añadir nuevo cliente'"
+>>>>>>> 982331e (Agregué la funcionalidad para crear nuevos registros, se arreglo el menu para que carge desde la base de datos)
             />
           </div>
 
@@ -566,6 +584,16 @@ async function guardarNuevoCliente() {
 
 .input-wrapper {
   position: relative;
+}
+
+.input-wrapper-con-boton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-wrapper-con-boton .styled-input {
+  flex-grow: 1;
 }
 
 /* Inputs oscuros (igual a ProductoSave) */

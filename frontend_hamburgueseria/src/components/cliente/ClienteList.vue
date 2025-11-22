@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { Cliente } from '@/models/cliente'
 import http from '@/plugins/axios'
-import { Button, Dialog, InputGroup, InputGroupAddon, InputText } from 'primevue'
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon'
+import InputText from 'primevue/inputtext'
 import { computed, onMounted, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -14,7 +18,12 @@ const mostrarConfirmDialog = ref<boolean>(false)
 const busqueda = ref<string>('')
 
 async function obtenerLista() {
-  clientes.value = await http.get(ENDPOINT).then((response) => response.data)
+  try {
+    clientes.value = await http.get(ENDPOINT).then((response) => response.data)
+  } catch (e) {
+    console.error('Error cargando clientes:', e)
+    clientes.value = []
+  }
 }
 
 const clientesFiltrados = computed(() => {

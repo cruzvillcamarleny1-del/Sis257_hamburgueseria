@@ -2,9 +2,15 @@
 import type { Producto } from '@/models/producto'
 import http from '@/plugins/axios'
 import { computed, onMounted, ref } from 'vue'
-import { Button, Dialog, InputGroup, InputGroupAddon, InputText } from 'primevue'
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon'
+import InputText from 'primevue/inputtext'
+import { useToast } from 'primevue/usetoast'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import { useCartStore } from '@/stores'
 
 const ENDPOINT = 'productos'
 const productos = ref<Producto[]>([])
@@ -12,22 +18,17 @@ const productoDelete = ref<Producto | null>(null)
 const mostrarConfirmDialog = ref(false)
 const emit = defineEmits(['edit'])
 const busqueda = ref<string>('')
-
-const paginaActual = ref(1)
-const filasPorPagina = ref(10)
-
-const totalPaginas = computed(() =>
-  Math.ceil(productosFiltrados.value.length / filasPorPagina.value),
-)
-
-const productosPaginados = computed(() => {
-  const inicio = (paginaActual.value - 1) * filasPorPagina.value
-  const fin = inicio + filasPorPagina.value
-  return productosFiltrados.value.slice(inicio, fin)
-})
+const toast = useToast()
+const cartStore = useCartStore()
 
 async function obtenerLista() {
-  productos.value = await http.get(ENDPOINT).then((res) => res.data)
+  try {
+    productos.value = await http.get(ENDPOINT).then((res) => res.data)
+  } catch (e) {
+    console.error('Error cargando productos:', e)
+    productos.value = []
+    toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar productos', life: 3000 })
+  }
 }
 
 const productosFiltrados = computed(() => {
@@ -46,9 +47,19 @@ function confirmarEliminar(producto: Producto) {
 }
 
 async function eliminar() {
-  await http.delete(`${ENDPOINT}/${productoDelete.value?.id}`)
-  obtenerLista()
-  mostrarConfirmDialog.value = false
+  try {
+    await http.delete(`${ENDPOINT}/${productoDelete.value?.id}`)
+    obtenerLista()
+    mostrarConfirmDialog.value = false
+    toast.add({ severity: 'success', summary: 'Eliminado', detail: 'Producto eliminado correctamente', life: 3000 })
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar el producto', life: 3000 })
+  }
+}
+
+function addToCart(producto: Producto) {
+  cartStore.addToCart(producto)
+  toast.add({ severity: 'success', summary: 'Agregado', detail: `${producto.nombre} agregado al carrito`, life: 3000 })
 }
 
 onMounted(() => {
@@ -161,6 +172,7 @@ defineExpose({ obtenerLista })
                 class="btn-editar"
                 size="small"
                 rounded
+                aria-label="Editar producto"
               />
               <Button
                 icon="pi pi-trash"
@@ -168,6 +180,15 @@ defineExpose({ obtenerLista })
                 class="btn-eliminar"
                 size="small"
                 rounded
+                aria-label="Eliminar producto"
+              />
+              <Button
+                icon="pi pi-shopping-cart"
+                @click="addToCart(slotProps.data)"
+                class="btn-agregar-carrito"
+                size="small"
+                rounded
+                aria-label="Agregar al carrito"
               />
             </div>
           </template>
@@ -492,6 +513,22 @@ defineExpose({ obtenerLista })
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 18px rgba(244, 67, 54, 0.45) !important;
   background: linear-gradient(135deg, #e57373, #f44336) !important;
+}
+
+.btn-agregar-carrito {
+  background: linear-gradient(135deg, #2196f3, #21cbf3) !important;
+  border: none !important;
+  color: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-agregar-carrito:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.55) !important;
+  background: linear-gradient(135deg, #21cbf3, #2196f3) !important;
 }
 
 /* No resultados */

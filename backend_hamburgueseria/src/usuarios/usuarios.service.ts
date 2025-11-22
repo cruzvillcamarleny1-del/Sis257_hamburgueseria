@@ -22,9 +22,9 @@ export class UsuariosService {
 
     const usuario = new Usuario();
     usuario.usuario = createUsuarioDto.usuario.trim();
-    usuario.clave = process.env.DEFAULT_PASSWORD ?? '';
-    usuario.email = createUsuarioDto.email.trim();
-    usuario.rol = createUsuarioDto.rol.trim();
+    usuario.clave = createUsuarioDto.clave;
+    usuario.email = `${createUsuarioDto.usuario.trim()}@gmail.com`; // Default email
+    usuario.rol = 'cliente'; // Default rol
     return this.usuariosRepository.save(usuario);
   }
 

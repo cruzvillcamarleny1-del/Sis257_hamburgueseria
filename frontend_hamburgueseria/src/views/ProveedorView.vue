@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ProveedorList from '@/components/proveedor/ProveedorList.vue'
 import ProveedorSave from '@/components/proveedor/ProveedorSave.vue'
-import { Button } from 'primevue'
+import Button from 'primevue/button'
 import { ref } from 'vue'
 
 const mostrarDialog = ref(false)

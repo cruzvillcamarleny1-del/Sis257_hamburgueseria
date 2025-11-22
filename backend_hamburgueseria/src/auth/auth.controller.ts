@@ -2,10 +2,12 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthLoginDto } from './dto/auth-login.dto';
+import { CreateUsuarioDto } from 'src/usuarios/dto/create-usuario.dto';
 //import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 //@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -14,5 +16,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() authLoginDto: AuthLoginDto): Promise<any> {
     return this.authService.login(authLoginDto);
+  }
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() createUsuarioDto: CreateUsuarioDto) {
+    return this.authService.register(createUsuarioDto);
   }
 }
