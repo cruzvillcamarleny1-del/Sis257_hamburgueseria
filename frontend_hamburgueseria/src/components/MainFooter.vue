@@ -29,7 +29,8 @@
             <div class="footer_detail">
               <a href="" class="footer-logo"> Hamburguesería </a>
               <p>
-                Pasión por las hamburguesas artesanales, ingredientes frescos y atención de calidad. ¡Ven y vive la mejor experiencia hamburguesera de la ciudad!
+                Pasión por las hamburguesas artesanales, ingredientes frescos y atención de calidad.
+                ¡Ven y vive la mejor experiencia hamburguesera de la ciudad!
               </p>
               <div class="footer_social">
                 <a href="">

@@ -536,8 +536,12 @@ defineExpose({ obtenerLista })
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 1rem;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1px 0 #ffd700;
-  box-shadow: 0 4px 18px 0 rgba(255, 215, 0, 0.09), 0 2px 8px rgba(0,0,0,0.10);
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.18),
+    0 1px 0 #ffd700;
+  box-shadow:
+    0 4px 18px 0 rgba(255, 215, 0, 0.09),
+    0 2px 8px rgba(0, 0, 0, 0.1);
   vertical-align: middle;
   text-align: center;
   position: relative;
@@ -547,7 +551,9 @@ defineExpose({ obtenerLista })
   border-right: 1.5px solid rgba(237, 201, 1, 0.18);
 }
 :deep(.p-datatable-thead > tr > th:hover) {
-  box-shadow: 0 6px 24px 0 rgba(255, 215, 0, 0.18), 0 2px 8px rgba(246, 4, 4, 0.13);
+  box-shadow:
+    0 6px 24px 0 rgba(255, 215, 0, 0.18),
+    0 2px 8px rgba(246, 4, 4, 0.13);
   background: linear-gradient(120deg, rgb(255, 238, 0) 60%, #ffd700 100%);
   color: #23272f;
 }

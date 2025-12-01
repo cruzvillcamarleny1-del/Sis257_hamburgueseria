@@ -62,7 +62,7 @@ onMounted(cargarVentas)
 
 <template>
   <div class="ventas-container">
-    <!-- Header con diseño atractivo -->
+    <!-- Header y tarjeta pegados, SIN main-content -->
     <div class="header-section">
       <div class="header-content">
         <div class="title-wrapper">
@@ -80,10 +80,7 @@ onMounted(cargarVentas)
           />
         </div>
       </div>
-    </div>
-
-    <!-- Contenido principal -->
-    <div class="main-content">
+      <!-- Junta aquí la tarjeta -->
       <div class="content-card">
         <template v-if="ventas.length">
           <div class="tabla-ventas-container">
@@ -247,6 +244,7 @@ onMounted(cargarVentas)
 
 .header-section {
   padding: 2rem 1.5rem;
+  padding-bottom: 0 !important; /* <- clave */
   position: relative;
   z-index: 2;
 }
@@ -324,21 +322,18 @@ onMounted(cargarVentas)
   transform: translateY(-1px) !important;
 }
 
-.main-content {
-  padding: 0 1.5rem 2rem;
-  position: relative;
-  z-index: 2;
-}
 
 .content-card {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   max-width: 1200px;
-  margin: 0 auto;
-  background: rgba(238, 238, 238, 0.98);
+  background: #fff;
   border-radius: 20px;
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.3),
     0 8px 20px rgba(255, 190, 51, 0.15);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 190, 51, 0.2);
   overflow: hidden;
   position: relative;
@@ -350,13 +345,11 @@ onMounted(cargarVentas)
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
   background: linear-gradient(90deg, #ffbe33 0%, #ffa500 50%, #ffbe33 100%);
+  z-index: 2;
 }
 
-.content-card-inner {
-  padding: 1rem 1rem 1.5rem;
-}
+
 
 .estado-vacio {
   padding: 3rem 2rem;
@@ -657,9 +650,7 @@ onMounted(cargarVentas)
   .header-section {
     padding: 1.5rem 1rem;
   }
-  .main-content {
-    padding: 0 1rem 1.5rem;
-  }
+
   .main-title {
     font-size: 1.8rem;
   }
@@ -667,4 +658,5 @@ onMounted(cargarVentas)
     border-radius: 15px;
   }
 }
+
 </style>

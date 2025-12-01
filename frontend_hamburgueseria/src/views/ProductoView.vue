@@ -37,7 +37,7 @@ function handleCloseDialog() {
       <div class="header-content">
         <div class="title-wrapper">
           <i class="pi pi-bookmark header-icon"></i>
-          <h1 class="main-title">Pedidos</h1>
+          <h1 class="main-title">Productos</h1>
           <p class="subtitle">Administra el menú de tu hamburguesería</p>
         </div>
         <div class="action-wrapper">

@@ -1,8 +1,36 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch, nextTick, computed } from 'vue'
+import type { Producto } from '@/models/producto'
+import http from '@/plugins/axios'
 
 let isotopeInstance: any = null
 let owlInited = false
+const productos = ref<Producto[]>([])
+
+const mostrarTodos = ref(false)
+const cantidadInicial = 6
+const productosMostrados = computed(() =>
+  mostrarTodos.value ? productos.value : productos.value.slice(0, cantidadInicial),
+)
+
+const textoBusqueda = ref('')
+
+const productosFiltrados = computed(() => {
+  const texto = textoBusqueda.value.trim().toLowerCase()
+  if (!texto) return productos.value
+  return productos.value.filter(
+    (p) => p.nombre.toLowerCase().includes(texto) || p.descripcion.toLowerCase().includes(texto),
+  )
+})
+
+async function cargarProductos() {
+  try {
+    const res = await http.get('/productos')
+    productos.value = res.data
+  } catch (error) {
+    console.error('Error al cargar productos', error)
+  }
+}
 
 // Isotope (filtros menú)
 onMounted(() => {
@@ -34,6 +62,7 @@ onMounted(() => {
 
 // OwlCarousel + Nice Select
 onMounted(() => {
+  cargarProductos()
   const w = window as any
   const $ = w.jQuery || w.$
   if (!$ || !$.fn) return
@@ -56,6 +85,35 @@ onMounted(() => {
     })
     owlInited = true
   }
+})
+
+watch([productos, mostrarTodos, textoBusqueda], async () => {
+  await nextTick()
+  const w = window as any
+  const $ = w.jQuery || w.$
+  if (!$ || !w.Isotope) return
+
+  const $grid = $('.grid')
+  if (!$grid.length) return
+
+  if (isotopeInstance) {
+    isotopeInstance.destroy()
+    isotopeInstance = null
+  }
+
+  isotopeInstance = new w.Isotope($grid[0], {
+    itemSelector: '.all',
+    layoutMode: 'fitRows',
+  })
+
+  $('.filters_menu li')
+    .off('click.menuFilter')
+    .on('click.menuFilter', function () {
+      const filterValue = $(this).attr('data-filter')
+      isotopeInstance.arrange({ filter: filterValue })
+      $('.filters_menu li').removeClass('active')
+      $(this).addClass('active')
+    })
 })
 
 // Limpieza
@@ -312,690 +370,109 @@ onBeforeUnmount(() => {
           <h2>Nuestro Menú</h2>
         </div>
 
-        <ul class="filters_menu">
-          <li class="active" data-filter="*">Todos</li>
-          <li data-filter=".burger">Hamburguesas</li>
-          <li data-filter=".pizza">Pizzas</li>
-          <li data-filter=".pasta">Pastas</li>
-          <li data-filter=".fries">Papas Fritas</li>
-        </ul>
+        <div class="buscador_menu mb-4 d-flex justify-content-center">
+          <div class="input-group" style="max-width: 400px">
+            <input
+              type="text"
+              v-model="textoBusqueda"
+              class="form-control"
+              placeholder="Buscar..."
+              aria-label="Buscar producto"
+            />
+            <span class="input-group-text bg-white">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.398a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
 
         <div class="filters-content">
           <div class="row grid">
-            <div class="col-sm-6 col-lg-4 all pizza">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f1.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Pizza Artesanal</h5>
-                    <p>
-                      Disfruta de nuestra pizza artesanal, horneada al momento con ingredientes
-                      frescos y masa crujiente. ¡El complemento perfecto para tu hamburguesa
-                      favorita!
-                    </p>
-                    <div class="options">
-                      <h6>20 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
+            <template v-for="producto in mostrarTodos ? productosFiltrados : productosFiltrados.slice(0, cantidadInicial)" :key="producto.id">
+              <div
+                class="col-sm-6 col-lg-4 all"
+                :class="['all', producto.categoria ? producto.categoria.toLowerCase() : '']"
+              >
+                <div class="box">
+                  <div>
+                    <div class="img-box">
+                      <img :src="producto.imagen" :alt="producto.nombre" />
+                    </div>
+                    <div class="detail-box">
+                      <h5>{{ producto.nombre }}</h5>
+                      <p>{{ producto.descripcion }}</p>
+                      <div class="options">
+                        <h6>{{ producto.precio }} Bs</h6>
+                        <a href="">
+                          <!-- SVG del carrito, puedes copiar el mismo que tienes en los productos estáticos -->
+                          <svg
+                            version="1.1"
+                            id="Capa_1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            viewBox="0 0 456.029 456.029"
+                            style="enable-background: new 0 0 456.029 456.029"
+                            xml:space="preserve"
+                          >
                             <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
+                              <g>
+                                <path
+                                  d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
+                     c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
+                                />
+                              </g>
                             </g>
-                          </g>
-                          <g>
                             <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
+                              <g>
+                                <path
+                                  d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
+                     C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
+                     c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
+                     C457.728,97.71,450.56,86.958,439.296,84.91z"
+                                />
+                              </g>
                             </g>
-                          </g>
-                          <g>
                             <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
+                              <g>
+                                <path
+                                  d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
+                     c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
+                                />
+                              </g>
                             </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                            <g></g>
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all burger">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f2.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Hamburguesa Especial</h5>
-                    <p>
-                      Prueba nuestra hamburguesa especial: carne jugosa, pan artesanal, queso
-                      derretido y vegetales frescos. ¡Una explosión de sabor en cada bocado!
-                    </p>
-                    <div class="options">
-                      <h6>15 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all pizza">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f3.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Pizza Suprema</h5>
-                    <p>
-                      Prueba nuestra pizza suprema: salsa especial, abundante queso, pepperoni y
-                      vegetales frescos sobre una masa artesanal. ¡Ideal para compartir junto a tus
-                      hamburguesas!
-                    </p>
-                    <div class="options">
-                      <h6>17 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all pasta">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f4.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Pasta Casera</h5>
-                    <p>
-                      Disfruta de nuestra pasta casera, preparada al dente y acompañada de salsas
-                      artesanales. ¡El complemento perfecto para tu hamburguesa o pizza favorita!
-                    </p>
-                    <div class="options">
-                      <h6>18 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all fries">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f5.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Papas Fritas</h5>
-                    <p>
-                      Disfruta de nuestras papas fritas crujientes, doradas a la perfección y
-                      servidas calientes. ¡El acompañamiento ideal para tu hamburguesa o pizza
-                      favorita!
-                    </p>
-                    <div class="options">
-                      <h6>10 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all pizza">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f6.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Pizza Cuatro Quesos</h5>
-                    <p>
-                      Deléitate con nuestra pizza cuatro quesos: una mezcla irresistible de quesos
-                      fundidos sobre masa artesanal y salsa especial. ¡Ideal para los amantes del
-                      queso!
-                    </p>
-                    <div class="options">
-                      <h6>15 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all burger">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f7.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Hamburguesa Sabrosa</h5>
-                    <p>
-                      Disfruta de nuestra hamburguesa sabrosa, jugosa y preparada con ingredientes
-                      frescos. ¡El placer en cada bocado!
-                    </p>
-                    <div class="options">
-                      <h6>12 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all burger">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f8.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Hamburguesa de Pollo</h5>
-                    <p>
-                      Prueba nuestra hamburguesa de pollo: pechuga empanizada y crujiente, pan
-                      suave, lechuga fresca, tomate y mayonesa especial.
-                    </p>
-                    <div class="options">
-                      <h6>14 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 all pasta">
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img src="@/assets/images/f9.png" alt="" />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Pasta Italiana</h5>
-                    <p>
-                      Disfruta de nuestra pasta italiana, cocida al dente y acompañada de salsas
-                      artesanales. ¡Perfecta para complementar tu hamburguesa!
-                    </p>
-                    <div class="options">
-                      <h6>10 Bs</h6>
-                      <a href="">
-                        <svg
-                          version="1.1"
-                          id="Capa_1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                          x="0px"
-                          y="0px"
-                          viewBox="0 0 456.029 456.029"
-                          style="enable-background: new 0 0 456.029 456.029"
-                          xml:space="preserve"
-                        >
-                          <g>
-                            <g>
-                              <path
-                                d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                         c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                         C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                         c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                         C457.728,97.71,450.56,86.958,439.296,84.91z"
-                              />
-                            </g>
-                          </g>
-                          <g>
-                            <g>
-                              <path
-                                d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                         c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                              />
-                            </g>
-                          </g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                          <g></g>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </template>
           </div>
         </div>
         <div class="btn-box">
-          <a href=""> Ver más </a>
+          <a href="#" v-if="!mostrarTodos" @click.prevent="mostrarTodos = true">Ver más</a>
+          <a href="#" v-else @click.prevent="mostrarTodos = false">Ver menos</a>
         </div>
       </div>
     </section>
@@ -1139,5 +616,13 @@ onBeforeUnmount(() => {
 .clientes-container,
 .proveedor-container {
   padding-top: 90px; /* Ajusta según la altura real de tu header */
+}
+.buscador_menu .form-control {
+  border-radius: 20px 0 0 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.buscador_menu .input-group-text {
+  border-radius: 0 20px 20px 0;
+  border-left: none;
 }
 </style>

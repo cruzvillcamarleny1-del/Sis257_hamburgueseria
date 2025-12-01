@@ -11,23 +11,32 @@ const usuario = ref('')
 const clave = ref('')
 const error = ref(false)
 const loading = ref(false)
+const tipoUsuario = ref('empleado')
 
-function onSubmit() {
-  const authStore = useAuthStore()
+async function onSubmit() {
   loading.value = true
   error.value = false
-  authStore
-    .login(usuario.value, clave.value)
-    .then(() => {
-      console.log('Token OK:', authStore.token)
-    })
-    .catch((e) => {
-      console.error('Login error:', e)
+
+  try {
+    // Intentar login como empleado
+    const authStore = useAuthStore()
+    await authStore.login(usuario.value, clave.value)
+    // Redirige a dashboard de empleados
+  } catch (e) {
+    try {
+      // Si falla, intentar login como cliente
+      const res = await http.post('/clientes/login', {
+        email: usuario.value,
+        password: clave.value,
+      })
+      localStorage.setItem('token', res.data.token)
+      // Redirige a página de pedidos o inicio
+    } catch (err) {
       error.value = true
-    })
-    .finally(() => {
-      loading.value = false
-    })
+    }
+  } finally {
+    loading.value = false
+  }
 }
 
 function handleImageError(event: Event) {
@@ -54,6 +63,8 @@ function handleImageError(event: Event) {
 
           <template #content>
             <form @submit.prevent="onSubmit" class="login-form">
+              <div class="field">
+              </div>
               <div class="field">
                 <label for="usuario" class="field-label">
                   <i class="pi pi-user"></i>
@@ -99,6 +110,9 @@ function handleImageError(event: Event) {
                 <i class="pi pi-sign-in"></i>
                 <span class="ml-2">Ingresar</span>
               </Button>
+              <router-link to="/register-cliente" class="link-small"
+                >¿Eres cliente nuevo? Regístrate aquí</router-link
+              >
             </form>
           </template>
         </Card>
