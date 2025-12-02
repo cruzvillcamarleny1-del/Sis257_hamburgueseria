@@ -40,6 +40,21 @@ const router = createRouter({
       name: 'proveedor',
       component: () => import('../views/ProveedorView.vue'),
     },
+    {
+      path: '/carrito',
+      name: 'carrito',
+      component: () => import('../views/CarritoView.vue'),
+    },
+        {
+      path: '/checkout',
+      name: 'checkout',
+      component: () => import('../views/CheckoutView.vue'),
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+    },
   ],
   scrollBehavior(to) {
     if (to.hash) {
@@ -52,7 +67,7 @@ const router = createRouter({
 // Guard para rutas privadas
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const publicPages = ['/', '/login', '/about']
+  const publicPages = ['/', '/login', '/about', '/carrito', '/register']
   const authRequired = !publicPages.includes(to.path)
   if (authRequired && !authStore.token) {
     return next('/login')

@@ -12,6 +12,16 @@ export class ClientesController {
     return this.clientesService.create(createClienteDto);
   }
 
+  @Post('register-web')
+  async registerWeb(@Body() createClienteDto: CreateClienteDto) {
+    return this.clientesService.registerWeb(createClienteDto);
+  }
+
+  @Post('login-web')
+  async loginWeb(@Body() body: { email: string; password: string }) {
+    return this.clientesService.loginWeb(body.email, body.password);
+  }
+
   @Get()
   findAll() {
     return this.clientesService.findAll();

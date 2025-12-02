@@ -3,6 +3,6 @@ export interface Cliente {
   ci?: string
   nombre: string
   apellido: string
-  telefono: string
-  direccion: string
+  telefono?: string
+  direccion?: string
 }

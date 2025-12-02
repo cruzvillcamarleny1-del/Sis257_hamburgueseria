@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateClienteDto {
   @ApiPropertyOptional()
@@ -26,7 +26,7 @@ export class CreateClienteDto {
   @MaxLength(10, {
     message: 'El campo telefono no debe ser mayor a 10 caracteres',
   })
-  readonly telefono: string;
+  readonly telefono?: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: 'El campo direccion es obligatorio' })
@@ -34,5 +34,15 @@ export class CreateClienteDto {
   @MaxLength(100, {
     message: 'El campo direccion no debe ser mayor a 100 caracteres',
   })
-  readonly direccion: string;
+  readonly direccion?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEmail({}, { message: 'Debe ser un email válido' })
+  readonly email?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+  readonly password?: string;
 }

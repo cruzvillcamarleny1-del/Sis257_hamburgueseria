@@ -10,6 +10,7 @@ import { ProveedoresModule } from './proveedores/proveedores.module';
 import { VentasModule } from './ventas/ventas.module';
 import { DetalleVentaModule } from './detalle_venta/detalle_venta.module';
 import { AuthModule } from './auth/auth.module';
+import { PedidosModule } from './pedidos/pedidos.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AuthModule } from './auth/auth.module';
     VentasModule,
     DetalleVentaModule,
     AuthModule,
+    PedidosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

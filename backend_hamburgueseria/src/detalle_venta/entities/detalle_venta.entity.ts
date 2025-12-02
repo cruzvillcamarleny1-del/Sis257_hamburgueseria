@@ -25,10 +25,14 @@ export class DetalleVenta {
   @Column()
   cantidad: number;
 
+  //Ing intentamos cambiar a "name : precio_unitario" pero los datos
+  // en la base de datos ya estan
+  //  con ese nombre y no se puede cambiar :C disculpe Ing.
+
   @Column('decimal', { precision: 10, scale: 2 })
   precioUnitario: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { name: 'sub_total', precision: 10, scale: 2 })
   subtotal: number;
 
   @CreateDateColumn({ name: 'fecha_creacion' })

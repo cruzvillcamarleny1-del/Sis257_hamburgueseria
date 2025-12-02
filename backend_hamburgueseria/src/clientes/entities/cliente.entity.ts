@@ -23,11 +23,17 @@ export class Cliente {
   @Column('varchar', { length: 70 })
   apellido: string;
 
-  @Column('varchar', { length: 10 })
-  telefono: string;
+  @Column('varchar', { length: 10, nullable: true })
+  telefono?: string;
 
-  @Column('varchar', { length: 100 })
-  direccion: string;
+  @Column('varchar', { length: 100, nullable: true })
+  direccion?: string;
+
+  @Column('varchar', { length: 100, nullable: true, unique: true })
+  email?: string;
+
+  @Column('varchar', { length: 100, nullable: true })
+  password?: string;
 
   @CreateDateColumn({ name: 'fecha_creacion' })
   fechaCreacion: Date;

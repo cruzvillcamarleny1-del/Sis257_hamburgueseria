@@ -3,6 +3,19 @@ import { useAuthStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { onMounted, onBeforeUnmount } from 'vue'
+import { useCarritoStore } from '@/stores/carrito'
+import { computed } from 'vue'
+
+const isCliente = computed(() => !!localStorage.getItem('id_cliente'))
+const nombreCliente = computed(() => localStorage.getItem('nombre_cliente') || 'Cliente')
+const nombreEmpleado = computed(() => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    return user.nombre || user.usuario || 'Usuario'
+  } catch {
+    return 'Usuario'
+  }
+})
 
 const showGestion = ref(false)
 const authStore = useAuthStore()
@@ -10,7 +23,7 @@ const router = useRouter()
 
 const isHeaderHidden = ref(false)
 let lastScrollY = window.scrollY
-
+const carrito = useCarritoStore()
 function handleScroll() {
   const threshold = 200 // Cambia este valor para ajustar cuándo se oculta
   if (window.scrollY > lastScrollY && window.scrollY > threshold) {
@@ -23,9 +36,10 @@ function handleScroll() {
 
 function logout() {
   authStore.logout()
+  localStorage.removeItem('id_cliente')
+  localStorage.removeItem('nombre_cliente')
   router.push('/login')
 }
-
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
 })
@@ -37,7 +51,7 @@ onBeforeUnmount(() => {
 <template>
   <div>
     <!-- header section strats -->
-    <header class="header_section">
+    <header class="header_section" :class="{ 'header-hidden': isHeaderHidden }">
       <div class="container">
         <nav class="navbar navbar-expand-lg custom_nav-container">
           <router-link class="navbar-brand" :to="{ path: '/', hash: '#home' }">
@@ -78,7 +92,7 @@ onBeforeUnmount(() => {
               </li>
 
               <!-- Dropdown Gestión solo si está logeado -->
-              <li v-if="authStore.token" class="nav-item gestion-dropdown">
+              <li v-if="authStore.token && !isCliente" class="nav-item gestion-dropdown">
                 <a
                   class="nav-link gestion-toggle"
                   href="#"
@@ -121,59 +135,30 @@ onBeforeUnmount(() => {
             </ul>
             <div class="user_option">
               <a class="cart_link" href="#">
-                <svg
-                  version="1.1"
-                  id="Capa_1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink"
-                  x="0px"
-                  y="0px"
-                  viewBox="0 0 456.029 456.029"
-                  style="enable-background: new 0 0 456.029 456.029"
-                  xml:space="preserve"
-                >
-                  <g>
-                    <g>
-                      <path
-                        d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                   c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                      />
-                    </g>
-                  </g>
-                  <g>
-                    <g>
-                      <path
-                        d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                   C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                   c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                   C457.728,97.71,450.56,86.958,439.296,84.91z"
-                      />
-                    </g>
-                  </g>
-                  <g>
-                    <g>
-                      <path
-                        d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                   c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                      />
-                    </g>
-                  </g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                  <g></g>
-                </svg>
+                <router-link to="/carrito" class="btn btn-primary position-relative">
+                  <i class="pi pi-shopping-cart"></i> Carrito
+                  <span
+                    v-if="carrito.itemCount > 0"
+                    class="cart-count"
+                    style="
+                      position: absolute;
+                      top: -8px;
+                      right: -8px;
+                      background: #d72323;
+                      color: #fff;
+                      border-radius: 50%;
+                      width: 20px;
+                      height: 20px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 0.8rem;
+                      font-weight: bold;
+                    "
+                  >
+                    {{ carrito.itemCount }}
+                  </span>
+                </router-link>
               </a>
               <button class="btn nav_search-btn" type="button">
                 <i class="fa fa-search" aria-hidden="true"></i>
@@ -181,7 +166,7 @@ onBeforeUnmount(() => {
               <div class="user-block">
                 <span v-if="authStore.token" class="user_name">
                   <i class="fa fa-user"></i>
-                  {{ authStore.user?.nombre || authStore.user?.usuario || 'Usuario' }}
+                  {{ isCliente ? nombreCliente : nombreEmpleado }}
                   <button class="order_online" @click="logout">Cerrar Sesión</button>
                 </span>
                 <RouterLink v-else to="/login" class="order_online user-login-btn">
