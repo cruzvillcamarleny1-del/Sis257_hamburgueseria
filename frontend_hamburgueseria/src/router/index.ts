@@ -36,6 +36,11 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue'),
     },
     {
+      path: '/login-cliente',
+      name: 'login-cliente',
+      component: () => import('../views/LoginClienteView.vue'),
+    },
+    {
       path: '/proveedor',
       name: 'proveedor',
       component: () => import('../views/ProveedorView.vue'),
@@ -45,14 +50,14 @@ const router = createRouter({
       name: 'carrito',
       component: () => import('../views/CarritoView.vue'),
     },
-        {
+    {
       path: '/checkout',
       name: 'checkout',
       component: () => import('../views/CheckoutView.vue'),
     },
     {
-      path: '/register',
-      name: 'register',
+      path: '/register-cliente',
+      name: 'register-cliente',
       component: () => import('../views/RegisterView.vue'),
     },
   ],
@@ -67,7 +72,14 @@ const router = createRouter({
 // Guard para rutas privadas
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const publicPages = ['/', '/login', '/about', '/carrito', '/register']
+  const publicPages = [
+    '/',
+    '/login',
+    '/about',
+    '/carrito',
+    '/login-cliente',
+    '/register-cliente',
+  ]
   const authRequired = !publicPages.includes(to.path)
   if (authRequired && !authStore.token) {
     return next('/login')

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import http from '@/plugins/axios'
 import router from '@/router'
+import http from '@/plugins/axios'
 
 const nombre = ref('')
 const apellido = ref('')
@@ -11,38 +11,34 @@ const direccion = ref('')
 const email = ref('')
 const password = ref('')
 const advertencia = ref('')
+const loading = ref(false)
 
 async function registrarCliente() {
   if (!nombre.value || !apellido.value || !email.value || !password.value) {
-    advertencia.value = 'Completa todos los campos obligatorios.'
-    setTimeout(() => (advertencia.value = ''), 2000)
+    advertencia.value = 'Completa los campos obligatorios.'
     return
   }
+
+  advertencia.value = ''
+  loading.value = true
+
   try {
-    const body = {
+    await http.post('/clientes/register-web', {
       nombre: nombre.value.trim(),
       apellido: apellido.value.trim(),
-      ci: ci.value.trim(),
-      telefono: telefono.value.trim(),
-      direccion: direccion.value.trim(),
-      email: email.value.trim().toLowerCase(),
-      password: password.value.trim(),
-    }
-    await http.post('/clientes/register-web', body)
-    advertencia.value = '¡Registro exitoso! Ahora inicia sesión.'
-    setTimeout(() => {
-      advertencia.value = ''
-      router.push('/login')
-    }, 1800)
-  } catch (e) {
-    if (e.response && e.response.data && e.response.data.message) {
-      advertencia.value = Array.isArray(e.response.data.message)
-        ? e.response.data.message.join(', ')
-        : e.response.data.message
-    } else {
-      advertencia.value = 'Error al registrar. Intenta con otro email.'
-    }
-    setTimeout(() => (advertencia.value = ''), 3000)
+      ci: ci.value?.trim() || undefined,
+      telefono: telefono.value?.trim() || undefined,
+      direccion: direccion.value?.trim() || undefined,
+      email: email.value.trim(),
+      password: password.value,
+    })
+
+    advertencia.value = 'Registro exitoso. Redirigiendo...'
+    setTimeout(() => router.push('/login-cliente'), 1200)
+  } catch (error: any) {
+    advertencia.value = error?.response?.data?.message || 'No se pudo registrar al cliente.'
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -52,52 +48,65 @@ async function registrarCliente() {
     <div class="register-card">
       <div class="burger-header">
         <div class="logo-circle">🍔</div>
-        <h2 class="login-title">Registro de Cliente</h2>
-        <div class="login-title accent">¡Crea tu cuenta y pide online!</div>
-        <div class="login-subtitle">Completa tus datos para registrarte</div>
+        <h2 class="login-title">Regístrate como cliente</h2>
+        <p class="login-subtitle">Disfruta de nuestras hamburguesas con tu cuenta</p>
       </div>
-      <form @submit.prevent="registrarCliente" class="register-form">
-        <div v-if="advertencia" class="login-error">{{ advertencia }}</div>
-        <div class="fields-row">
+
+      <form class="register-form" @submit.prevent="registrarCliente">
+        <div class="fields-grid">
           <div class="field">
-            <label class="field-label yellow-label">Nombre *</label>
-            <input v-model="nombre" class="styled-input" placeholder="Nombre" />
+            <label class="field-label yellow-label">Nombre</label>
+            <input v-model="nombre" class="styled-input" placeholder="Juan" />
           </div>
           <div class="field">
-            <label class="field-label yellow-label">Apellido *</label>
-            <input v-model="apellido" class="styled-input" placeholder="Apellido" />
+            <label class="field-label yellow-label">Apellido</label>
+            <input v-model="apellido" class="styled-input" placeholder="Pérez" />
           </div>
+        </div>
+
+        <div class="fields-grid">
           <div class="field">
             <label class="field-label yellow-label">CI</label>
-            <input v-model="ci" class="styled-input" placeholder="CI" />
+            <input v-model="ci" class="styled-input" placeholder="1234567" />
           </div>
           <div class="field">
             <label class="field-label yellow-label">Teléfono</label>
-            <input v-model="telefono" class="styled-input" placeholder="Teléfono" />
+            <input v-model="telefono" class="styled-input" placeholder="70000000" />
           </div>
+        </div>
+
+        <div class="fields-grid">
           <div class="field">
             <label class="field-label yellow-label">Dirección</label>
-            <input v-model="direccion" class="styled-input" placeholder="Dirección" />
+            <input v-model="direccion" class="styled-input" placeholder="Av. Principal #123" />
           </div>
           <div class="field">
-            <label class="field-label yellow-label">Email *</label>
-            <input v-model="email" class="styled-input" placeholder="Email" type="email" />
-          </div>
-          <div class="field">
-            <label class="field-label yellow-label">Contraseña *</label>
+            <label class="field-label yellow-label">Email</label>
             <input
-              v-model="password"
-              type="password"
+              v-model="email"
               class="styled-input"
-              placeholder="Contraseña"
+              type="email"
+              placeholder="cliente@correo.com"
             />
           </div>
         </div>
-        <button type="submit" class="login-button">Registrarse</button>
-        <div class="extra-links">
-          <router-link to="/login" class="link-small">¿Ya tienes cuenta? Inicia sesión</router-link>
+        <div class="field">
+          <label class="field-label yellow-label">Contraseña</label>
+          <input v-model="password" class="styled-input" type="password" placeholder="********" />
         </div>
+
+        <button class="login-button" type="submit" :disabled="loading">
+          {{ loading ? 'Registrando...' : 'Crear cuenta' }}
+        </button>
+
+        <p v-if="advertencia" class="login-error">{{ advertencia }}</p>
       </form>
+
+      <div class="extra-links">
+        <router-link class="link-small" to="/login-cliente">
+          ¿Ya tienes cuenta? Inicia sesión
+        </router-link>
+      </div>
     </div>
   </div>
 </template>

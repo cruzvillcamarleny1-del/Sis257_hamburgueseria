@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
                   {{ isCliente ? nombreCliente : nombreEmpleado }}
                   <button class="order_online" @click="logout">Cerrar Sesión</button>
                 </span>
-                <RouterLink v-else to="/login" class="order_online user-login-btn">
+                <RouterLink v-else to="/login-cliente" class="order_online user-login-btn">
                   <i class="fa fa-user"></i> Iniciar Sesión
                 </RouterLink>
               </div>
