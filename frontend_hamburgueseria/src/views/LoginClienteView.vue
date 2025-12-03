@@ -23,19 +23,26 @@ async function loginCliente() {
       password: password.value,
     })
 
-    if (!data?.token) {
-      throw new Error('Respuesta inválida.')
-    }
+    if (!data?.token) throw new Error('Respuesta inválida.')
 
     localStorage.setItem('cliente_token', data.token)
+    localStorage.setItem('rol', 'cliente')
     if (data.cliente) {
       localStorage.setItem('cliente_data', JSON.stringify(data.cliente))
+      if (data.cliente.id) {
+        localStorage.setItem('id_cliente', String(data.cliente.id))
+      }
+      const nombreCompleto = [data.cliente.nombre, data.cliente.apellido]
+        .filter(Boolean)
+        .join(' ')
+        .trim()
+      localStorage.setItem('nombre_cliente', nombreCompleto || 'Cliente')
     }
 
+    window.dispatchEvent(new CustomEvent('cliente-session-changed'))
     router.push('/')
   } catch (error: any) {
-    errorMessage.value =
-      error?.response?.data?.message || 'Credenciales incorrectas.'
+    errorMessage.value = error?.response?.data?.message || 'Credenciales incorrectas.'
   } finally {
     loading.value = false
   }
@@ -103,7 +110,7 @@ function handleImageError(event: Event) {
             <router-link to="/register-cliente" class="link-small">
               ¿Eres nuevo? Regístrate aquí
             </router-link>
-                        <router-link to="/login" class="link-small emphasis">
+            <router-link to="/login" class="link-small emphasis">
               ¿Eres empleado? Inicia aquí
             </router-link>
           </form>
@@ -260,7 +267,7 @@ function handleImageError(event: Event) {
   align-items: center;
   gap: 0.55rem;
   font-weight: 600;
-     color: #ffbe33;
+  color: #ffbe33;
   font-size: 0.9rem;
   letter-spacing: 0.5px;
 }
@@ -434,8 +441,13 @@ function handleImageError(event: Event) {
   animation-delay: 4.4s;
 }
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-22px) rotate(6deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-22px) rotate(6deg);
+  }
 }
 @media (max-width: 1100px) {
   .login-content {

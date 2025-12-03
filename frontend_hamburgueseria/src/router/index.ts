@@ -60,6 +60,16 @@ const router = createRouter({
       name: 'register-cliente',
       component: () => import('../views/RegisterView.vue'),
     },
+    {
+      path: '/pedidos-cliente',
+      name: 'pedidos-cliente',
+      component: () => import('../views/PedidosClienteView.vue'),
+    },
+        {
+      path: '/pedidos-empleado',
+      name: 'pedidos-empleado',
+      component: () => import('../views/PedidosEmpleadosView.vue'),
+    },
   ],
   scrollBehavior(to) {
     if (to.hash) {
@@ -70,20 +80,28 @@ const router = createRouter({
 })
 
 // Guard para rutas privadas
+const employeeOnly = ['/producto', '/proveedor', '/pedidos-empleado', '/cliente', '/ventas']
+const clientOnly = ['/pedidos-cliente']
+
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const publicPages = [
-    '/',
-    '/login',
-    '/about',
-    '/carrito',
-    '/login-cliente',
-    '/register-cliente',
-  ]
+  const publicPages = ['/', '/login', '/about', '/carrito', '/login-cliente', '/register-cliente']
   const authRequired = !publicPages.includes(to.path)
-  if (authRequired && !authStore.token) {
+  const clienteToken = typeof window !== 'undefined' ? localStorage.getItem('cliente_token') : ''
+  const rol = typeof window !== 'undefined' ? localStorage.getItem('rol') || '' : ''
+
+  if (employeeOnly.includes(to.path) && rol === 'cliente') {
+    return next('/')
+  }
+
+  if (clientOnly.includes(to.path) && !clienteToken) {
+    return next('/login-cliente')
+  }
+
+  if (authRequired && !authStore.token && !clienteToken) {
     return next('/login')
   }
+
   next()
 })
 

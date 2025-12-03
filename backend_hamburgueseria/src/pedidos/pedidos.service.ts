@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Pedido } from './entities/pedido.entity';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { UpdatePedidoDto } from './dto/update-pedido.dto';
+import { Cliente } from '../clientes/entities/cliente.entity';
 
 @Injectable()
 export class PedidosService {
@@ -12,10 +13,10 @@ export class PedidosService {
     private readonly pedidoRepository: Repository<Pedido>,
   ) {}
 
-async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
-  const pedido = this.pedidoRepository.create(createPedidoDto);
-  return await this.pedidoRepository.save(pedido);
-}
+  async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+    const pedido = this.pedidoRepository.create(createPedidoDto);
+    return await this.pedidoRepository.save(pedido);
+  }
 
   async findAll(): Promise<Pedido[]> {
     return await this.pedidoRepository.find();
@@ -39,19 +40,23 @@ async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
   }
 
   async findByCliente(idCliente: number): Promise<Pedido[]> {
-    return this.pedidoRepository.find({
-      where: { idCliente },
-      relations: ['detalles'],
-      order: { fecha: 'DESC' },
-    });
+    return this.pedidoRepository
+      .createQueryBuilder('pedido')
+      .leftJoinAndSelect('pedido.detalles', 'detalles')
+      .leftJoinAndMapOne('pedido.cliente', Cliente, 'cliente', 'cliente.id = pedido.idCliente')
+      .where('pedido.idCliente = :idCliente', { idCliente })
+      .orderBy('pedido.fecha', 'DESC')
+      .getMany();
   }
 
   async findByEstado(estado: string): Promise<Pedido[]> {
-    return this.pedidoRepository.find({
-      where: { estado },
-      relations: ['detalles', 'cliente'],
-      order: { fecha: 'DESC' },
-    });
+    return this.pedidoRepository
+      .createQueryBuilder('pedido')
+      .leftJoinAndSelect('pedido.detalles', 'detalles')
+      .leftJoinAndMapOne('pedido.cliente', Cliente, 'cliente', 'cliente.id = pedido.idCliente')
+      .where('pedido.estado = :estado', { estado })
+      .orderBy('pedido.fecha', 'DESC')
+      .getMany();
   }
 
   async updateEstado(id: number, estado: string): Promise<Pedido> {

@@ -10,10 +10,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cliente } from './entities/cliente.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+
+type ClienteSafe = Omit<Cliente, 'password'>;
 
 @Injectable()
 export class ClientesService {
-  constructor(@InjectRepository(Cliente) private clientesRepository: Repository<Cliente>) { }
+  constructor(
+    @InjectRepository(Cliente) private clientesRepository: Repository<Cliente>,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  private sanitize(cliente: Cliente): ClienteSafe {
+    const { password, ...rest } = cliente;
+    return rest;
+  }
+
+  private buildToken(cliente: Cliente) {
+    return this.jwtService.sign({ sub: cliente.id, email: cliente.email, role: 'cliente' });
+  }
 
   async create(createClienteDto: CreateClienteDto): Promise<Cliente> {
     const existe = await this.clientesRepository.findOneBy({
@@ -60,7 +75,7 @@ export class ClientesService {
     if (cliente) return this.clientesRepository.softRemove(cliente);
   }
 
-  async registerWeb(createClienteDto: CreateClienteDto): Promise<Cliente> {
+  async registerWeb(createClienteDto: CreateClienteDto) {
     if (!createClienteDto.email || !createClienteDto.password) {
       throw new ConflictException('Email y contraseña son requeridos');
     }
@@ -78,21 +93,20 @@ export class ClientesService {
     cliente.email = createClienteDto.email.trim();
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      cliente.password = (await bcrypt.hash(createClienteDto.password, 10)) as string;
+      cliente.password = (await bcrypt.hash(createClienteDto.password, 10)) as string
     } catch {
       throw new ConflictException('Error al encriptar la contraseña');
     }
 
-    return this.clientesRepository.save(cliente);
+    const nuevoCliente = await this.clientesRepository.save(cliente);
+    return { cliente: this.sanitize(nuevoCliente), token: this.buildToken(nuevoCliente) };
   }
 
-  async loginWeb(email: string, password: string): Promise<Cliente> {
-    const cliente = await this.clientesRepository.findOne({ where: { email } });
+  async loginWeb(email: string, password: string) {
+    const cliente = await this.clientesRepository.findOne({ where: { email: email.trim() } });
     if (!cliente || !cliente.password) throw new UnauthorizedException('Credenciales incorrectas');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const match = await bcrypt.compare(password, cliente.password);
     if (!match) throw new UnauthorizedException('Credenciales incorrectas');
-    return cliente;
+    return { cliente: this.sanitize(cliente), token: this.buildToken(cliente) };
   }
 }

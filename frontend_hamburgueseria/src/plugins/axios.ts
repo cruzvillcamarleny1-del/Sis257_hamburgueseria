@@ -7,10 +7,17 @@ const axios: AxiosInstance = Axios.create({
 
 axios.interceptors.request.use((config) => {
   const authStore = useAuthStore()
-  //console.log('🔑 TOKEN:', authStore.token)
+  const clienteToken =
+    typeof window !== 'undefined' ? localStorage.getItem('cliente_token') : ''
+  const bearer = authStore.token || clienteToken
+
   if (config.headers) {
     config.headers['Content-type'] = 'application/json'
-    config.headers['Authorization'] = 'Bearer ' + authStore.token
+    if (bearer) {
+      config.headers['Authorization'] = 'Bearer ' + bearer
+    } else {
+      delete config.headers['Authorization']
+    }
   }
   return config
 })

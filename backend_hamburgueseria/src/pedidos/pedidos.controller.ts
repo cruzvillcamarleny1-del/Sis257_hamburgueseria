@@ -9,6 +9,7 @@ export class PedidosController {
 
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto) {
+    console.log('Nuevo pedido =>', createPedidoDto);
     return this.pedidosService.create(createPedidoDto);
   }
 

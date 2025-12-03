@@ -1,31 +1,58 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { onMounted, onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useCarritoStore } from '@/stores/carrito'
-import { computed } from 'vue'
 
-const isCliente = computed(() => !!localStorage.getItem('id_cliente'))
-const nombreCliente = computed(() => localStorage.getItem('nombre_cliente') || 'Cliente')
-const nombreEmpleado = computed(() => {
-  try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
-    return user.nombre || user.usuario || 'Usuario'
-  } catch {
-    return 'Usuario'
-  }
-})
-
-const showGestion = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
+const clienteToken = ref(localStorage.getItem('cliente_token') || '')
+const clienteNombre = ref(localStorage.getItem('nombre_cliente') || 'Cliente')
 
+function parseEmpleado() {
+  const stored = authStore.user || localStorage.getItem('user') || ''
+  try {
+    return typeof stored === 'string' && stored.trim().startsWith('{') ? JSON.parse(stored) : stored
+  } catch {
+    return stored
+  }
+}
+const rawEmpleado = ref(parseEmpleado())
+
+function syncClienteSession() {
+  clienteToken.value = localStorage.getItem('cliente_token') || ''
+  clienteNombre.value = localStorage.getItem('nombre_cliente') || 'Cliente'
+}
+function syncEmpleadoSession() {
+  rawEmpleado.value = parseEmpleado()
+}
+
+const hasEmpleado = computed(() => !!authStore.token)
+const hasCliente = computed(() => !!clienteToken.value)
+const isCliente = computed(() => hasCliente.value && !hasEmpleado.value)
+const nombreCliente = computed(() => clienteNombre.value)
+const nombreEmpleado = computed(() => {
+  const empleado = rawEmpleado.value
+  if (!empleado) return 'Usuario'
+  if (typeof empleado === 'string') return empleado
+  return empleado.nombre || empleado.usuario || 'Usuario'
+})
+
+watch(
+  () => authStore.user,
+  () => {
+    syncEmpleadoSession()
+  },
+  { deep: true },
+)
+
+const showGestion = ref(false)
 const isHeaderHidden = ref(false)
 let lastScrollY = window.scrollY
 const carrito = useCarritoStore()
+
 function handleScroll() {
-  const threshold = 200 // Cambia este valor para ajustar cuándo se oculta
+  const threshold = 200
   if (window.scrollY > lastScrollY && window.scrollY > threshold) {
     isHeaderHidden.value = true
   } else {
@@ -35,16 +62,33 @@ function handleScroll() {
 }
 
 function logout() {
-  authStore.logout()
+  if (hasEmpleado.value) {
+    authStore.logout()
+    syncEmpleadoSession()
+    window.dispatchEvent(new CustomEvent('cliente-session-changed'))
+    return
+  }
+
+  localStorage.removeItem('cliente_token')
+  localStorage.removeItem('cliente_data')
   localStorage.removeItem('id_cliente')
   localStorage.removeItem('nombre_cliente')
-  router.push('/login')
+  localStorage.removeItem('rol')
+  syncClienteSession()
+  window.dispatchEvent(new CustomEvent('cliente-session-changed'))
+  router.push('/login-cliente')
 }
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  window.addEventListener('cliente-session-changed', syncClienteSession)
+  syncClienteSession()
+  syncEmpleadoSession()
 })
+
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('cliente-session-changed', syncClienteSession)
 })
 </script>
 
@@ -130,41 +174,37 @@ onBeforeUnmount(() => {
                   >
                     <i class="fa fa-users"></i> Clientes
                   </router-link>
+                  <router-link
+                    class="gestion-item"
+                    :to="{ name: 'pedidos-empleado' }"
+                    @click="showGestion = false"
+                  >
+                    <i class="fa fa-users"></i> Pedidos de Clientes
+                  </router-link>
                 </div>
               </li>
             </ul>
             <div class="user_option">
               <a class="cart_link" href="#">
-                <router-link to="/carrito" class="btn btn-primary position-relative">
-                  <i class="pi pi-shopping-cart"></i> Carrito
-                  <span
-                    v-if="carrito.itemCount > 0"
-                    class="cart-count"
-                    style="
-                      position: absolute;
-                      top: -8px;
-                      right: -8px;
-                      background: #d72323;
-                      color: #fff;
-                      border-radius: 50%;
-                      width: 20px;
-                      height: 20px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      font-size: 0.8rem;
-                      font-weight: bold;
-                    "
-                  >
-                    {{ carrito.itemCount }}
-                  </span>
+                <router-link to="/carrito" class="header-pill primary">
+                  <i class="pi pi-shopping-cart"></i>
+                  <span v-if="carrito.itemCount > 0" class="cart-count">{{
+                    carrito.itemCount
+                  }}</span>
+                </router-link>
+              </a>
+
+              <a v-if="hasCliente" class="cart_link" href="#">
+                <router-link v-if="hasCliente" to="/pedidos-cliente" class="header-pill secondary">
+                  <i class="pi pi-list"></i>
+                  Pedidos
                 </router-link>
               </a>
               <button class="btn nav_search-btn" type="button">
                 <i class="fa fa-search" aria-hidden="true"></i>
               </button>
               <div class="user-block">
-                <span v-if="authStore.token" class="user_name">
+                <span v-if="hasEmpleado || hasCliente" class="user_name">
                   <i class="fa fa-user"></i>
                   {{ isCliente ? nombreCliente : nombreEmpleado }}
                   <button class="order_online" @click="logout">Cerrar Sesión</button>
@@ -294,5 +334,45 @@ onBeforeUnmount(() => {
 .header-hidden {
   transform: translateY(-100%);
   box-shadow: none;
+}
+.user_option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.header-pill.primary {
+  background: linear-gradient(135deg, #ffbe33, #ffa114);
+  color: #1d1f21;
+  box-shadow: 0 8px 18px rgba(255, 177, 51, 0.35);
+}
+.header-pill.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff6d9;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.header-pill:hover {
+  transform: translateY(-2px);
+}
+.cart-count {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #d72323;
+  color: #fff;
+  font-size: 0.75rem;
+  display: grid;
+  place-items: center;
+}
+.cart_link {
+  margin: 0;
 }
 </style>
