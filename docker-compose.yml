@@ -1,0 +1,56 @@
+networks:
+  net-hamburgueseria:
+    name: net-hamburgueseria
+    driver: bridge
+
+services:
+  db-hamburgueseria:
+    image: postgres
+    container_name: db-hamburgueseria
+    restart: always
+    ports:
+      - "5434:5432"
+    networks:
+      - net-hamburgueseria
+    environment:
+      POSTGRES_DB: sis257_Hamburgueseria
+      POSTGRES_USER: usr_hamburgueseria
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - ./pgdata:/var/lib/postgresql/18/docker
+
+  backend-hamburgueseria:
+    depends_on:
+      - db-hamburgueseria
+    image: be-hamburgueseria
+    container_name: api-hamburgueseria
+    restart: unless-stopped
+    build:
+      context: ./backend_hamburgueseria
+    ports:
+      - 3000:3000
+    networks:
+      - net-hamburgueseria
+    environment:
+      DB_HOST: db-hamburgueseria
+    volumes:
+      - ./backend_hamburgueseria:/usr/src/app
+      - /usr/src/app/node_modules/
+
+  frontend-hamburgueseria:
+    depends_on:
+        - backend-hamburgueseria
+    image: fe-hamburgueseria
+    container_name: app-hamburgueseria
+    restart: unless-stopped
+    build:
+      context: ./frontend_hamburgueseria
+      dockerfile: Dockerfile
+    ports:
+      - 85:85
+    networks:
+      - net-hamburgueseria
+    environment:
+      VITE_BASE_URL_ENDPOINT: backend-hamburgueseria
+    volumes:
+      - /usr/src/app/node_modules/
